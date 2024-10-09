@@ -1,5 +1,5 @@
-#include <BluetoothHIDMaster.h>
-#include <BluetoothLock.h>
+// #include <BluetoothHIDMaster.h>
+// #include <BluetoothLock.h>
 
 #include "pico/stdlib.h"
 #include "pico/cyw43_arch.h"
@@ -17,8 +17,8 @@
 
 
 // #include <JoystickBT.h>
-BluetoothHCI hci;
-BluetoothHIDMaster hid;
+// BluetoothHCI hci;
+// BluetoothHIDMaster hid;
 // const uint8_t joystickAddress[] = {0xe8, 0x47, 0x3a, 0x21, 0x20, 0x61};
 
 #define MAX_ATTRIBUTE_VALUE_SIZE 512
@@ -176,53 +176,53 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
     case BTSTACK_EVENT_STATE:
       // On boot, we try a manual connection
       if (btstack_event_state_get_state(packet) == HCI_STATE_WORKING){
-        printf("Starting hid_host_connect (%s)\n", bd_addr_to_str(remote_addr));
+        Serial.printf("Starting hid_host_connect (%s)\n", bd_addr_to_str(remote_addr));
         status = hid_host_connect(remote_addr, hid_host_report_mode, &hid_host_cid);
         if (status != ERROR_CODE_SUCCESS){
-          printf("hid_host_connect command failed: 0x%02x\n", status);
+          Serial.printf("hid_host_connect command failed: 0x%02x\n", status);
         }
       }
       break;
     case HCI_EVENT_CONNECTION_COMPLETE:
       status = hci_event_connection_complete_get_status(packet);
-      printf("Connection complete: %x\n", status);
+      Serial.printf("Connection complete: %x\n", status);
       break;
     case HCI_EVENT_DISCONNECTION_COMPLETE:
       status = hci_event_disconnection_complete_get_status(packet);
       reason = hci_event_disconnection_complete_get_reason(packet);
-      printf("Disconnection complete: status: %x, reason: %x\n", status, reason);
+      Serial.printf("Disconnection complete: status: %x, reason: %x\n", status, reason);
       break;
     case HCI_EVENT_MAX_SLOTS_CHANGED:
       status = hci_event_max_slots_changed_get_lmp_max_slots(packet);
-      printf("Max slots changed: %x\n", status);
+      Serial.printf("Max slots changed: %x\n", status);
       break;
     case HCI_EVENT_PIN_CODE_REQUEST:
-      printf("Pin code request. Responding '0000'\n");
+      Serial.printf("Pin code request. Responding '0000'\n");
       hci_event_pin_code_request_get_bd_addr(packet, event_addr);
       gap_pin_code_response(event_addr, "0000");
       break;
     case HCI_EVENT_USER_CONFIRMATION_REQUEST:
-      printf("SSP User Confirmation Request: %d\n", little_endian_read_32(packet, 8));
+      Serial.printf("SSP User Confirmation Request: %d\n", little_endian_read_32(packet, 8));
       break;
     case HCI_EVENT_HID_META:
       hid_event = hci_event_hid_meta_get_subevent_code(packet);
       switch (hid_event) {
         case HID_SUBEVENT_INCOMING_CONNECTION:
           hid_subevent_incoming_connection_get_address(packet, event_addr);
-          printf("Accepting connection from %s\n", bd_addr_to_str(event_addr));
+          Serial.printf("Accepting connection from %s\n", bd_addr_to_str(event_addr));
           hid_host_accept_connection(hid_subevent_incoming_connection_get_hid_cid(packet), hid_host_report_mode);
           break;
         case HID_SUBEVENT_CONNECTION_OPENED:
           status = hid_subevent_connection_opened_get_status(packet);
           hid_subevent_connection_opened_get_bd_addr(packet, event_addr);
           if (status != ERROR_CODE_SUCCESS) {
-            printf("Connection to %s failed: 0x%02x\n", bd_addr_to_str(event_addr), status);
+            Serial.printf("Connection to %s failed: 0x%02x\n", bd_addr_to_str(event_addr), status);
             bt_hid_disconnected(event_addr);
             return;
           }
           hid_host_descriptor_available = false;
           hid_host_cid = hid_subevent_connection_opened_get_hid_cid(packet);
-          printf("Connected to %s\n", bd_addr_to_str(event_addr));
+          Serial.printf("Connected to %s\n", bd_addr_to_str(event_addr));
           bd_addr_copy(connected_addr, event_addr);
           break;
         case HID_SUBEVENT_DESCRIPTOR_AVAILABLE:
@@ -231,59 +231,59 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
             hid_host_descriptor_available = true;
 
             uint16_t dlen = hid_descriptor_storage_get_descriptor_len(hid_host_cid);
-            printf("HID descriptor available. Len: %d\n", dlen);
+            Serial.printf("HID descriptor available. Len: %d\n", dlen);
 
             // Send FEATURE 0x05, to switch the controller to "full" report mode
             hid_host_send_get_report(hid_host_cid, HID_REPORT_TYPE_FEATURE, 0x05);
           } else {
-            printf("Couldn't process HID Descriptor, status: %d\n", status);
+            Serial.printf("Couldn't process HID Descriptor, status: %d\n", status);
           }
           break;
         case HID_SUBEVENT_REPORT:
           if (hid_host_descriptor_available){
             hid_host_handle_interrupt_report(hid_subevent_report_get_report(packet), hid_subevent_report_get_report_len(packet));
           } else {
-            printf("No hid host descriptor available\n");
+            Serial.printf("No hid host descriptor available\n");
             printf_hexdump(hid_subevent_report_get_report(packet), hid_subevent_report_get_report_len(packet));
           }
           break;
         case HID_SUBEVENT_SET_PROTOCOL_RESPONSE:
           status = hid_subevent_set_protocol_response_get_handshake_status(packet);
           if (status != HID_HANDSHAKE_PARAM_TYPE_SUCCESSFUL){
-            printf("Protocol handshake error: 0x%02x\n", status);
+            Serial.printf("Protocol handshake error: 0x%02x\n", status);
             break;
           }
           proto = static_cast<hid_protocol_mode_t>(hid_subevent_set_protocol_response_get_protocol_mode(packet));
           switch (proto) {
           case HID_PROTOCOL_MODE_BOOT:
-            printf("Negotiated protocol: BOOT\n");
+            Serial.printf("Negotiated protocol: BOOT\n");
             break;
           case HID_PROTOCOL_MODE_REPORT:
-            printf("Negotiated protocol: REPORT\n");
+            Serial.printf("Negotiated protocol: REPORT\n");
             break;
           default:
-            printf("Negotiated unknown protocol: 0x%x\n", proto);
+            Serial.printf("Negotiated unknown protocol: 0x%x\n", proto);
             break;
           }
           break;
         case HID_SUBEVENT_CONNECTION_CLOSED:
-          printf("HID connection closed: %s\n", bd_addr_to_str(connected_addr));
+          Serial.printf("HID connection closed: %s\n", bd_addr_to_str(connected_addr));
           bt_hid_disconnected(connected_addr);
           break;
         case HID_SUBEVENT_GET_REPORT_RESPONSE:
           {
             status = hid_subevent_get_report_response_get_handshake_status(packet);
             uint16_t dlen =  hid_subevent_get_report_response_get_report_len(packet);
-            printf("GET_REPORT response. status: %d, len: %d\n", status, dlen);
+            Serial.printf("GET_REPORT response. status: %d, len: %d\n", status, dlen);
           }
           break;
         default:
-          printf("Unknown HID subevent: 0x%x\n", hid_event);
+          Serial.printf("Unknown HID subevent: 0x%x\n", hid_event);
           break;
       }
       break;
     default:
-      //printf("Unknown HCI event: 0x%x\n", event);
+      Serial.printf("Unknown HCI event: 0x%x\n", event);
       break;
 	}
 }
@@ -308,7 +308,7 @@ static void blink_handler(btstack_timer_source_t *ts)
 
 void bt_main(void) {
 	if (cyw43_arch_init()) {
-		printf("Wi-Fi init failed\n");
+		Serial.printf("Wi-Fi init failed\n");
 		return;
 	}
 
@@ -332,7 +332,7 @@ void bt_main(void) {
 // 	// stdio_init_all();
 
 // 	sleep_ms(1000);
-// 	printf("Hello\n");
+// 	Serial.printf("Hello\n");
 
 // 	multicore_launch_core1(bt_main);
 // 	// Wait for init (should do a handshake with the fifo here?)
@@ -345,7 +345,7 @@ void bt_main(void) {
 // 	for ( ;; ) {
 // 		sleep_ms(20);
 // 		bt_hid_get_latest(&state);
-// 		printf("buttons: %04x, l: %d,%d, r: %d,%d, l2,r2: %d,%d hat: %d\n",
+// 		Serial.printf("buttons: %04x, l: %d,%d, r: %d,%d, l2,r2: %d,%d hat: %d\n",
 // 				state.buttons, state.lx, state.ly, state.rx, state.ry,
 // 				state.l2, state.r2, state.hat);
 
@@ -361,9 +361,11 @@ void bt_main(void) {
 struct bt_hid_state state;
 void setup(){
   // stdio_init_all();
+  Serial.begin();
+  delay(5000);
 
 	sleep_ms(1000);
-	printf("Hello\n");
+	Serial.printf("Hello\n");
 
 	multicore_launch_core1(bt_main);
 	// Wait for init (should do a handshake with the fifo here?)
@@ -377,9 +379,9 @@ void setup(){
 void loop(){
   sleep_ms(20);
   bt_hid_get_latest(&state);
-  printf("buttons: %04x, l: %d,%d, r: %d,%d, l2,r2: %d,%d hat: %d\n",
-      state.buttons, state.lx, state.ly, state.rx, state.ry,
-      state.l2, state.r2, state.hat);
+  // Serial.printf("buttons: %04x, l: %d,%d, r: %d,%d, l2,r2: %d,%d hat: %d\n",
+  //     state.buttons, state.lx, state.ly, state.rx, state.ry,
+  //     state.l2, state.r2, state.hat);
 
   // float speed_scale = 1.0;
   // int8_t linear = clamp8(-(state.ly - 128) * speed_scale);
