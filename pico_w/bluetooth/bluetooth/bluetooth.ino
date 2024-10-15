@@ -5,6 +5,8 @@
 #include "pico/cyw43_arch.h"
 #include "pico/async_context.h"
 
+#define ENABLE_CLASSIC
+
 #include "btstack_run_loop.h"
 #include "btstack_config.h"
 #include "btstack.h"
@@ -15,6 +17,12 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 
+// BEGIN SCAN @33041 ...END SCAN @36892
+
+// Class    | Address           | RSSI | Name
+// -------- | ----------------- | ---- | ----------------
+// 005a020c | d0:49:7c:bf:6c:1f |  -37 | Disappearance
+// 00002508 | e4:17:d8:f6:f6:46 |  -34 | 8BitDo Pro 2
 
 // #include <JoystickBT.h>
 // BluetoothHCI hci;
@@ -28,7 +36,8 @@ static bd_addr_t connected_addr;
 static btstack_packet_callback_registration_t hci_event_callback_registration;
 
 // const uint8_t joystickAddress[] = {0xe8, 0x47, 0x3a, 0x21, 0x20, 0x61};
-static const char * joystickAddress = "E8:47:3A:21:20:61";
+// static const char * joystickAddress = "E8:47:3A:21:20:61";
+static const char * joystickAddress = "e4:17:d8:f6:f6:46";
 
 static uint8_t hid_descriptor_storage[MAX_ATTRIBUTE_VALUE_SIZE];
 
@@ -185,16 +194,16 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
       break;
     case HCI_EVENT_CONNECTION_COMPLETE:
       status = hci_event_connection_complete_get_status(packet);
-      Serial.printf("Connection complete: %x\n", status);
+      Serial.printf("Connection complete: 0x%x\n", status);
       break;
     case HCI_EVENT_DISCONNECTION_COMPLETE:
       status = hci_event_disconnection_complete_get_status(packet);
       reason = hci_event_disconnection_complete_get_reason(packet);
-      Serial.printf("Disconnection complete: status: %x, reason: %x\n", status, reason);
+      Serial.printf("Disconnection complete: status: 0x%x, reason: 0x%x\n", status, reason);
       break;
     case HCI_EVENT_MAX_SLOTS_CHANGED:
       status = hci_event_max_slots_changed_get_lmp_max_slots(packet);
-      Serial.printf("Max slots changed: %x\n", status);
+      Serial.printf("Max slots changed: 0x%x\n", status);
       break;
     case HCI_EVENT_PIN_CODE_REQUEST:
       Serial.printf("Pin code request. Responding '0000'\n");
@@ -282,10 +291,442 @@ static void packet_handler (uint8_t packet_type, uint16_t channel, uint8_t *pack
           break;
       }
       break;
+    case HCI_EVENT_TRANSPORT_PACKET_SENT:
+      {
+        Serial.printf("HCI_EVENT_TRANSPORT_PACKET_SENT\n");
+      }
+      break;
+    case HCI_EVENT_COMMAND_COMPLETE:
+      {
+        uint8_t num = hci_event_command_complete_get_num_hci_command_packets(packet);
+        uint16_t code = hci_event_command_complete_get_command_opcode(packet);
+        // uint8_t param = hci_event_command_complete_get_return_parameters(packet);
+        // Serial.printf("HCI_EVENT_COMMAND_COMPLETE. num_hci_command_packets: %d, command_opcode: %d, return_parameters: %d\n", num, code, param);
+        Serial.printf("HCI_EVENT_COMMAND_COMPLETE. num_hci_command_packets: %d, command_opcode: 0x%x\n", num, code);
+      }
+      break;
+    case GAP_EVENT_PAIRING_STARTED:
+      {
+        Serial.printf("GAP_EVENT_PAIRING_STARTED\n");
+      }
+      break;
+    case BTSTACK_EVENT_SCAN_MODE_CHANGED:
+      {
+        Serial.printf("BTSTACK_EVENT_SCAN_MODE_CHANGED\n");
+      }
+      break;
+    case HCI_EVENT_COMMAND_STATUS:
+      {
+        Serial.printf("HCI_EVENT_COMMAND_STATUS\n");
+      }
+      break;
+    case HCI_EVENT_CONNECTION_REQUEST:
+      {
+        Serial.printf("HCI_EVENT_CONNECTION_REQUEST\n");
+      }
+      break;
+    case HCI_EVENT_ROLE_CHANGE:
+      {
+        Serial.printf("HCI_EVENT_ROLE_CHANGE\n");
+      }
+      break;
+    case BTSTACK_EVENT_NR_CONNECTIONS_CHANGED:
+      {
+        Serial.printf("BTSTACK_EVENT_NR_CONNECTIONS_CHANGED\n");
+      }
+      break;
+    case HCI_EVENT_LINK_KEY_REQUEST:
+      {
+        Serial.printf("HCI_EVENT_LINK_KEY_REQUEST\n");
+      }
+      break;
     default:
       Serial.printf("Unknown HCI event: 0x%x\n", event);
       break;
 	}
+
+  switch (status) {
+    case ERROR_CODE_SUCCESS                                 :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_SUCCESS\n");
+      break;
+    case ERROR_CODE_UNKNOWN_HCI_COMMAND                     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_UNKNOWN_HCI_COMMAND\n");
+      break;
+    case ERROR_CODE_UNKNOWN_CONNECTION_IDENTIFIER           :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_UNKNOWN_CONNECTION_IDENTIFIER\n");
+      break;
+    case ERROR_CODE_HARDWARE_FAILURE                        :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_HARDWARE_FAILURE\n");
+      break;
+    case ERROR_CODE_PAGE_TIMEOUT                            :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_PAGE_TIMEOUT\n");
+      break;
+    case ERROR_CODE_AUTHENTICATION_FAILURE                  :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_AUTHENTICATION_FAILURE\n");
+      break;
+    case ERROR_CODE_PIN_OR_KEY_MISSING                      :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_PIN_OR_KEY_MISSING\n");
+      break;
+    case ERROR_CODE_MEMORY_CAPACITY_EXCEEDED                :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_MEMORY_CAPACITY_EXCEEDED\n");
+      break;
+    case ERROR_CODE_CONNECTION_TIMEOUT                      :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_CONNECTION_TIMEOUT\n");
+      break;
+    case ERROR_CODE_CONNECTION_LIMIT_EXCEEDED               :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_CONNECTION_LIMIT_EXCEEDED\n");
+      break;
+    case ERROR_CODE_SYNCHRONOUS_CONNECTION_LIMIT_TO_A_DEVICE_EXCEEDED  :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_SYNCHRONOUS_CONNECTION_LIMIT_TO_A_DEVICE_EXCEEDED\n");
+      break;
+    case ERROR_CODE_ACL_CONNECTION_ALREADY_EXISTS           :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_ACL_CONNECTION_ALREADY_EXISTS\n");
+      break;
+    case ERROR_CODE_COMMAND_DISALLOWED                      :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_COMMAND_DISALLOWED\n");
+      break;
+    case ERROR_CODE_CONNECTION_REJECTED_DUE_TO_LIMITED_RESOURCES :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_CONNECTION_REJECTED_DUE_TO_LIMITED_RESOURCES\n");
+      break;
+    case ERROR_CODE_CONNECTION_REJECTED_DUE_TO_SECURITY_REASONS  :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_CONNECTION_REJECTED_DUE_TO_SECURITY_REASONS\n");
+      break;
+    case ERROR_CODE_CONNECTION_REJECTED_DUE_TO_UNACCEPTABLE_BD_ADDR :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_CONNECTION_REJECTED_DUE_TO_UNACCEPTABLE_BD_ADDR\n");
+      break;
+    case ERROR_CODE_CONNECTION_ACCEPT_TIMEOUT_EXCEEDED      :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_CONNECTION_ACCEPT_TIMEOUT_EXCEEDED\n");
+      break;
+    case ERROR_CODE_UNSUPPORTED_FEATURE_OR_PARAMETER_VALUE  :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_UNSUPPORTED_FEATURE_OR_PARAMETER_VALUE\n");
+      break;
+    case ERROR_CODE_INVALID_HCI_COMMAND_PARAMETERS          :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_INVALID_HCI_COMMAND_PARAMETERS\n");
+      break;
+    case ERROR_CODE_REMOTE_USER_TERMINATED_CONNECTION       :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_REMOTE_USER_TERMINATED_CONNECTION\n");
+      break;
+    case ERROR_CODE_REMOTE_DEVICE_TERMINATED_CONNECTION_DUE_TO_LOW_RESOURCES :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_REMOTE_DEVICE_TERMINATED_CONNECTION_DUE_TO_LOW_RESOURCES\n");
+      break;
+    case ERROR_CODE_REMOTE_DEVICE_TERMINATED_CONNECTION_DUE_TO_POWER_OFF     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_REMOTE_DEVICE_TERMINATED_CONNECTION_DUE_TO_POWER_OFF\n");
+      break;
+    case ERROR_CODE_CONNECTION_TERMINATED_BY_LOCAL_HOST     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_CONNECTION_TERMINATED_BY_LOCAL_HOST\n");
+      break;
+    case ERROR_CODE_REPEATED_ATTEMPTS                       :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_REPEATED_ATTEMPTS\n");
+      break;
+    case ERROR_CODE_PAIRING_NOT_ALLOWED                     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_PAIRING_NOT_ALLOWED\n");
+      break;
+    case ERROR_CODE_UNKNOWN_LMP_PDU                         :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_UNKNOWN_LMP_PDU\n");
+      break;
+    case ERROR_CODE_UNSUPPORTED_REMOTE_FEATURE_UNSUPPORTED_LMP_FEATURE :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_UNSUPPORTED_REMOTE_FEATURE_UNSUPPORTED_LMP_FEATURE\n");
+      break;
+    case ERROR_CODE_SCO_OFFSET_REJECTED                     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_SCO_OFFSET_REJECTED\n");
+      break;
+    case ERROR_CODE_SCO_INTERVAL_REJECTED                   :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_SCO_INTERVAL_REJECTED\n");
+      break;
+    case ERROR_CODE_SCO_AIR_MODE_REJECTED                   :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_SCO_AIR_MODE_REJECTED\n");
+      break;
+    case ERROR_CODE_INVALID_LMP_PARAMETERS_INVALID_LL_PARAMETERS :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_INVALID_LMP_PARAMETERS_INVALID_LL_PARAMETERS\n");
+      break;
+    case ERROR_CODE_UNSPECIFIED_ERROR                       :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_UNSPECIFIED_ERROR\n");
+      break;
+    case ERROR_CODE_UNSUPPORTED_LMP_PARAMETER_VALUE_UNSUPPORTED_LL_PARAMETER_VALUE :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_UNSUPPORTED_LMP_PARAMETER_VALUE_UNSUPPORTED_LL_PARAMETER_VALUE\n");
+      break;
+    case ERROR_CODE_ROLE_CHANGE_NOT_ALLOWED                 :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_ROLE_CHANGE_NOT_ALLOWED\n");
+      break;
+    case ERROR_CODE_LMP_RESPONSE_TIMEOUT_LL_RESPONSE_TIMEOUT :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_LMP_RESPONSE_TIMEOUT_LL_RESPONSE_TIMEOUT\n");
+      break;
+    case ERROR_CODE_LMP_ERROR_TRANSACTION_COLLISION         :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_LMP_ERROR_TRANSACTION_COLLISION\n");
+      break;
+    case ERROR_CODE_LMP_PDU_NOT_ALLOWED                     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_LMP_PDU_NOT_ALLOWED\n");
+      break;
+    case ERROR_CODE_ENCRYPTION_MODE_NOT_ACCEPTABLE          :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_ENCRYPTION_MODE_NOT_ACCEPTABLE\n");
+      break;
+    case ERROR_CODE_LINK_KEY_CANNOT_BE_CHANGED              :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_LINK_KEY_CANNOT_BE_CHANGED\n");
+      break;
+    case ERROR_CODE_REQUESTED_QOS_NOT_SUPPORTED             :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_REQUESTED_QOS_NOT_SUPPORTED\n");
+      break;
+    case ERROR_CODE_INSTANT_PASSED                          :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_INSTANT_PASSED\n");
+      break;
+    case ERROR_CODE_PAIRING_WITH_UNIT_KEY_NOT_SUPPORTED     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_PAIRING_WITH_UNIT_KEY_NOT_SUPPORTED\n");
+      break;
+    case ERROR_CODE_DIFFERENT_TRANSACTION_COLLISION         :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_DIFFERENT_TRANSACTION_COLLISION\n");
+      break;
+    case ERROR_CODE_RESERVED                                :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_RESERVED\n");
+      break;
+    case ERROR_CODE_QOS_UNACCEPTABLE_PARAMETER              :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_QOS_UNACCEPTABLE_PARAMETER\n");
+      break;
+    case ERROR_CODE_QOS_REJECTED                            :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_QOS_REJECTED\n");
+      break;
+    case ERROR_CODE_CHANNEL_CLASSIFICATION_NOT_SUPPORTED    :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_CHANNEL_CLASSIFICATION_NOT_SUPPORTED\n");
+      break;
+    case ERROR_CODE_INSUFFICIENT_SECURITY                   :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_INSUFFICIENT_SECURITY\n");
+      break;
+    case ERROR_CODE_PARAMETER_OUT_OF_MANDATORY_RANGE        :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_PARAMETER_OUT_OF_MANDATORY_RANGE\n");
+      break;
+    // case :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: case\n");
+      break;
+    case ERROR_CODE_ROLE_SWITCH_PENDING                     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_ROLE_SWITCH_PENDING\n");
+      break;
+    // case :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: case\n");
+      break;
+    case ERROR_CODE_RESERVED_SLOT_VIOLATION                 :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_RESERVED_SLOT_VIOLATION\n");
+      break;
+    case ERROR_CODE_ROLE_SWITCH_FAILED                      :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_ROLE_SWITCH_FAILED\n");
+      break;
+    case ERROR_CODE_EXTENDED_INQUIRY_RESPONSE_TOO_LARGE     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_EXTENDED_INQUIRY_RESPONSE_TOO_LARGE\n");
+      break;
+    case ERROR_CODE_SECURE_SIMPLE_PAIRING_NOT_SUPPORTED_BY_HOST :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_SECURE_SIMPLE_PAIRING_NOT_SUPPORTED_BY_HOST\n");
+      break;
+    case ERROR_CODE_HOST_BUSY_PAIRING                       :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_HOST_BUSY_PAIRING\n");
+      break;
+    case ERROR_CODE_CONNECTION_REJECTED_DUE_TO_NO_SUITABLE_CHANNEL_FOUND :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_CONNECTION_REJECTED_DUE_TO_NO_SUITABLE_CHANNEL_FOUND\n");
+      break;
+    case ERROR_CODE_CONTROLLER_BUSY                         :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_CONTROLLER_BUSY\n");
+      break;
+    case ERROR_CODE_UNACCEPTABLE_CONNECTION_PARAMETERS      :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_UNACCEPTABLE_CONNECTION_PARAMETERS\n");
+      break;
+    case ERROR_CODE_DIRECTED_ADVERTISING_TIMEOUT            :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_DIRECTED_ADVERTISING_TIMEOUT\n");
+      break;
+    case ERROR_CODE_CONNECTION_TERMINATED_DUE_TO_MIC_FAILURE :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_CONNECTION_TERMINATED_DUE_TO_MIC_FAILURE\n");
+      break;
+    case ERROR_CODE_CONNECTION_FAILED_TO_BE_ESTABLISHED     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_CONNECTION_FAILED_TO_BE_ESTABLISHED\n");
+      break;
+    case ERROR_CODE_MAC_CONNECTION_FAILED                   :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_MAC_CONNECTION_FAILED\n");
+      break;
+    case ERROR_CODE_COARSE_CLOCK_ADJUSTMENT_REJECTED_BUT_WILL_TRY_TO_ADJUST_USING_CLOCK_DRAGGING :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ERROR_CODE_COARSE_CLOCK_ADJUSTMENT_REJECTED_BUT_WILL_TRY_TO_ADJUST_USING_CLOCK_DRAGGING\n");
+      break;
+
+    // BTstack defined ERRORS, mapped into BLuetooth status code range
+
+    case BTSTACK_CONNECTION_TO_BTDAEMON_FAILED              :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: BTSTACK_CONNECTION_TO_BTDAEMON_FAILED\n");
+      break;
+    case BTSTACK_ACTIVATION_FAILED_SYSTEM_BLUETOOTH         :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: BTSTACK_ACTIVATION_FAILED_SYSTEM_BLUETOOTH\n");
+      break;
+    case BTSTACK_ACTIVATION_POWERON_FAILED                  :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: BTSTACK_ACTIVATION_POWERON_FAILED\n");
+      break;
+    case BTSTACK_ACTIVATION_FAILED_UNKNOWN                  :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: BTSTACK_ACTIVATION_FAILED_UNKNOWN\n");
+      break;
+    case BTSTACK_NOT_ACTIVATED                              :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: BTSTACK_NOT_ACTIVATED\n");
+      break;
+    case BTSTACK_BUSY                                       :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: BTSTACK_BUSY\n");
+      break;
+    case BTSTACK_MEMORY_ALLOC_FAILED                        :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: BTSTACK_MEMORY_ALLOC_FAILED\n");
+      break;
+    case BTSTACK_ACL_BUFFERS_FULL                           :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: BTSTACK_ACL_BUFFERS_FULL\n");
+      break;
+
+    // l2cap errors - enumeration by the command that created them
+    case L2CAP_COMMAND_REJECT_REASON_COMMAND_NOT_UNDERSTOOD :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_COMMAND_REJECT_REASON_COMMAND_NOT_UNDERSTOOD\n");
+      break;
+    case L2CAP_COMMAND_REJECT_REASON_SIGNALING_MTU_EXCEEDED :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_COMMAND_REJECT_REASON_SIGNALING_MTU_EXCEEDED\n");
+      break;
+    case L2CAP_COMMAND_REJECT_REASON_INVALID_CID_IN_REQUEST :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_COMMAND_REJECT_REASON_INVALID_CID_IN_REQUEST\n");
+      break;
+
+    case L2CAP_CONNECTION_RESPONSE_RESULT_SUCCESSFUL        :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_CONNECTION_RESPONSE_RESULT_SUCCESSFUL\n");
+      break;
+    case L2CAP_CONNECTION_RESPONSE_RESULT_PENDING           :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_CONNECTION_RESPONSE_RESULT_PENDING\n");
+      break;
+    case L2CAP_CONNECTION_RESPONSE_RESULT_REFUSED_PSM       :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_CONNECTION_RESPONSE_RESULT_REFUSED_PSM\n");
+      break;
+    case L2CAP_CONNECTION_RESPONSE_RESULT_REFUSED_SECURITY  :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_CONNECTION_RESPONSE_RESULT_REFUSED_SECURITY\n");
+      break;
+    case L2CAP_CONNECTION_RESPONSE_RESULT_REFUSED_RESOURCES :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_CONNECTION_RESPONSE_RESULT_REFUSED_RESOURCES\n");
+      break;
+    case L2CAP_CONNECTION_RESPONSE_RESULT_ERTM_NOT_SUPPORTED :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_CONNECTION_RESPONSE_RESULT_ERTM_NOT_SUPPORTED\n");
+      break;
+
+    // should be L2CAP_CONNECTION_RTX_TIMEOUT
+    case L2CAP_CONNECTION_RESPONSE_RESULT_RTX_TIMEOUT       :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_CONNECTION_RESPONSE_RESULT_RTX_TIMEOUT\n");
+      break;
+    case L2CAP_CONNECTION_BASEBAND_DISCONNECT               :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_CONNECTION_BASEBAND_DISCONNECT\n");
+      break;
+    case L2CAP_SERVICE_ALREADY_REGISTERED                   :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_SERVICE_ALREADY_REGISTERED\n");
+      break;
+    case L2CAP_DATA_LEN_EXCEEDS_REMOTE_MTU                  :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_DATA_LEN_EXCEEDS_REMOTE_MTU\n");
+      break;
+    case L2CAP_SERVICE_DOES_NOT_EXIST                       :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_SERVICE_DOES_NOT_EXIST\n");
+      break;
+    case L2CAP_LOCAL_CID_DOES_NOT_EXIST                     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_LOCAL_CID_DOES_NOT_EXIST\n");
+      break;
+    case L2CAP_CONNECTION_RESPONSE_UNKNOWN_ERROR            :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: L2CAP_CONNECTION_RESPONSE_UNKNOWN_ERROR\n");
+      break;
+
+    case RFCOMM_MULTIPLEXER_STOPPED                         :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: RFCOMM_MULTIPLEXER_STOPPED\n");
+      break;
+    case RFCOMM_CHANNEL_ALREADY_REGISTERED                  :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: RFCOMM_CHANNEL_ALREADY_REGISTERED\n");
+      break;
+    case RFCOMM_NO_OUTGOING_CREDITS                         :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: RFCOMM_NO_OUTGOING_CREDITS\n");
+      break;
+    case RFCOMM_AGGREGATE_FLOW_OFF                          :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: RFCOMM_AGGREGATE_FLOW_OFF\n");
+      break;
+    case RFCOMM_DATA_LEN_EXCEEDS_MTU                        :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: RFCOMM_DATA_LEN_EXCEEDS_MTU\n");
+      break;
+
+    case HFP_REMOTE_REJECTS_AUDIO_CONNECTION                :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: HFP_REMOTE_REJECTS_AUDIO_CONNECTION\n");
+      break;
+
+    case SDP_HANDLE_ALREADY_REGISTERED                      :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: SDP_HANDLE_ALREADY_REGISTERED\n");
+      break;
+    case SDP_QUERY_INCOMPLETE                               :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: SDP_QUERY_INCOMPLETE\n");
+      break;
+    case SDP_SERVICE_NOT_FOUND                              :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: SDP_SERVICE_NOT_FOUND\n");
+      break;
+    case SDP_HANDLE_INVALID                                 :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: SDP_HANDLE_INVALID\n");
+      break;
+    case SDP_QUERY_BUSY                                     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: SDP_QUERY_BUSY\n");
+      break;
+
+    case ATT_HANDLE_VALUE_INDICATION_IN_PROGRESS            :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ATT_HANDLE_VALUE_INDICATION_IN_PROGRESS\n");
+      break;
+    case ATT_HANDLE_VALUE_INDICATION_TIMEOUT                :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ATT_HANDLE_VALUE_INDICATION_TIMEOUT\n");
+      break;
+    case ATT_HANDLE_VALUE_INDICATION_DISCONNECT             :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: ATT_HANDLE_VALUE_INDICATION_DISCONNECT\n");
+      break;
+
+    case GATT_CLIENT_NOT_CONNECTED                          :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: GATT_CLIENT_NOT_CONNECTED\n");
+      break;
+    case GATT_CLIENT_BUSY                                   :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: GATT_CLIENT_BUSY\n");
+      break;
+    case GATT_CLIENT_IN_WRONG_STATE                         :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: GATT_CLIENT_IN_WRONG_STATE\n");
+      break;
+    case GATT_CLIENT_DIFFERENT_CONTEXT_FOR_ADDRESS_ALREADY_EXISTS :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: GATT_CLIENT_DIFFERENT_CONTEXT_FOR_ADDRESS_ALREADY_EXISTS\n");
+      break;
+    case GATT_CLIENT_VALUE_TOO_LONG                         :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: GATT_CLIENT_VALUE_TOO_LONG\n");
+      break;
+    case GATT_CLIENT_CHARACTERISTIC_NOTIFICATION_NOT_SUPPORTED :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: GATT_CLIENT_CHARACTERISTIC_NOTIFICATION_NOT_SUPPORTED\n");
+      break;
+    case GATT_CLIENT_CHARACTERISTIC_INDICATION_NOT_SUPPORTED   :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: GATT_CLIENT_CHARACTERISTIC_INDICATION_NOT_SUPPORTED\n");
+      break;
+
+    case BNEP_SERVICE_ALREADY_REGISTERED                    :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: BNEP_SERVICE_ALREADY_REGISTERED\n");
+      break;
+    case BNEP_CHANNEL_NOT_CONNECTED                         :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: BNEP_CHANNEL_NOT_CONNECTED\n");
+      break;
+    case BNEP_DATA_LEN_EXCEEDS_MTU                          :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: BNEP_DATA_LEN_EXCEEDS_MTU\n");
+      break;
+
+    // OBEX ERRORS
+    case OBEX_UNKNOWN_ERROR                                 :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: OBEX_UNKNOWN_ERROR\n");
+      break;
+    case OBEX_CONNECT_FAILED                                :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: OBEX_CONNECT_FAILED\n");
+      break;
+    case OBEX_DISCONNECTED                                  :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: OBEX_DISCONNECTED\n");
+      break;
+    case OBEX_NOT_FOUND                                     :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: OBEX_NOT_FOUND\n");
+      break;
+    case OBEX_NOT_ACCEPTABLE                                :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: OBEX_NOT_ACCEPTABLE\n");
+      break;
+    case OBEX_ABORTED                                       :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: OBEX_ABORTED\n");
+      break;
+
+    case MESH_ERROR_APPKEY_INDEX_INVALID                    :
+      Serial.printf("status gave BLUETOOTH_ERROR_CODE: MESH_ERROR_APPKEY_INDEX_INVALID\n");
+      break;
+    default:
+      Serial.printf("Unkown BLUETOOTH_ERROR_CODE\n");
+      break;
+  }
 }
 
 #define BLINK_MS 250
@@ -330,6 +771,8 @@ void bt_main(void) {
 
 // int main(void) {
 // 	// stdio_init_all();
+//   Serial.begin();
+//   delay(5000);
 
 // 	sleep_ms(1000);
 // 	Serial.printf("Hello\n");
@@ -345,9 +788,9 @@ void bt_main(void) {
 // 	for ( ;; ) {
 // 		sleep_ms(20);
 // 		bt_hid_get_latest(&state);
-// 		Serial.printf("buttons: %04x, l: %d,%d, r: %d,%d, l2,r2: %d,%d hat: %d\n",
-// 				state.buttons, state.lx, state.ly, state.rx, state.ry,
-// 				state.l2, state.r2, state.hat);
+// 		// Serial.printf("buttons: %04x, l: %d,%d, r: %d,%d, l2,r2: %d,%d hat: %d\n",
+// 		// 		state.buttons, state.lx, state.ly, state.rx, state.ry,
+// 		// 		state.l2, state.r2, state.hat);
 
 // 		// float speed_scale = 1.0;
 // 		// int8_t linear = clamp8(-(state.ly - 128) * speed_scale);
