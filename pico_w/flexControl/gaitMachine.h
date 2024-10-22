@@ -22,7 +22,13 @@ namespace gaits{
 
   typedef std::vector<motorCMD> Gait;
 
-  typedef std::vector<Gait> GaitVector;
+  struct GaitStruct{
+    Gait gait;
+    uint8_t gait_time = 2;   //Duration of the gait's repeating pattern (seconds)
+    uint8_t motor_max_value = 90; //Max degree of servos allowed
+  };
+
+  typedef std::vector<GaitStruct> GaitVector;
 }
 
 using namespace gaits;
@@ -39,7 +45,7 @@ class GaitMachine
   private:
     int mapToMotorValue(float M_pos);
     void gaitControl(Gait gait, std::chrono::microseconds deltaT = std::chrono::microseconds(0));
-    Gait selectGait(bluetoothHandler::direction movement);
+    GaitStruct selectGait(bluetoothHandler::direction movement);
     
     std::array<int8_t, 3> running_commands = {-1,-1,-1};
 
@@ -47,9 +53,9 @@ class GaitMachine
     std::array<float, 3> M_pos = {0,0,0};
     std::array<float, 3> prev_M_pos = {0,0,0};
 
-    const uint8_t GAIT_T = 2;   //Duration of the gait's repeating pattern (seconds)
-    const uint8_t GAIT_AMP = 1;  //Amplitude of the gait (0-1)
-    const uint8_t MOTOR_MAX_VAL = 90; //Max degree of servos allowed
+    uint8_t GAIT_T = 2;   //Duration of the gait's repeating pattern (seconds)
+    uint8_t MOTOR_MAX_VAL = 90; //Max degree of servos allowed
+    
     float tick_frq = 100; //Hz
     microseconds tick_Time = duration_cast<microseconds>(std::chrono::duration<float>(1/tick_frq));
 

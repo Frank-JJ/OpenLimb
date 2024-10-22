@@ -1,58 +1,83 @@
+#include "SerialUSB.h"
 #include "gaitMachine.h"
 
 using namespace gaits;
 
-Gait Crawler = {
-  {Tail, 0.7, 0, 0.05},
-  {Left, 0.9, 0.05, 0.35},
-  {Tail, 0, 0.1, 0.3},
-  {Left, 0, 0.45, 0.05},
-  {Tail, 0.7, 0.5, 0.05},
-  {Right, 0.9, 0.55, 0.35},
-  {Tail, 0, 0.6, 0.3},
-  {Right, 0, 0.95, 0.05}
+GaitStruct Crawler = {
+  .gait={
+    {Tail, 0.7, 0, 0.05},
+    {Left, 0.9, 0.05, 0.35},
+    {Tail, 0, 0.1, 0.3},
+    {Left, 0, 0.45, 0.05},
+    {Tail, 0.7, 0.5, 0.05},
+    {Right, 0.9, 0.55, 0.35},
+    {Tail, 0, 0.6, 0.3},
+    {Right, 0, 0.95, 0.05}
+  },
+  .gait_time=2,
+  .motor_max_value=90
 };
 
-Gait Worm = {
-  {Tail,  0.68,  0,    0.2},
-  {Left,  0.9,  0,    0.5},
-  {Right, 0.9,  0,    0.5},
-  {Tail,  0.2,  0.5,  0.2},
-  {Left,  0,    0.8,  0.05},
-  {Right, 0,    0.8,  0.05},
-  {Tail,  0,    0.8,  0.2},
+GaitStruct Worm = {
+  .gait={
+    {Tail,  0.68,  0,    0.2},
+    {Left,  0.9,  0,    0.5},
+    {Right, 0.9,  0,    0.5},
+    {Tail,  0.2,  0.5,  0.2},
+    {Left,  0,    0.8,  0.05},
+    {Right, 0,    0.8,  0.05},
+    {Tail,  0,    0.8,  0.2}
+  },
+  .gait_time=1,
+  .motor_max_value=180
 };
 
-Gait Jump = {
-  {Tail, 1.0, 0, 0.001},
-  {Tail, 0.0, 0.4, 0.1}
+GaitStruct Jump = {
+  .gait={
+    {Tail, 1.0, 0, 0.001},
+    {Tail, 0.0, 0.4, 0.1}
+  },
+  .gait_time=2,
+  .motor_max_value=90
 };
 
-Gait WormR = {
-  {Tail,  0.68,  0,    0.2},
-  {Left,  0.5,  0,    0.5},
-  {Right, 0.9,  0,    0.5},
-  {Tail,  0.2,  0.5,  0.2},
-  {Left,  0,    0.8,  0.05},
-  {Right, 0,    0.8,  0.05},
-  {Tail,  0,    0.8,  0.2},
+GaitStruct WormR = {
+  .gait={
+    {Tail,  0.68,  0,    0.2},
+    {Left,  0.5,  0,    0.5},
+    {Right, 0.9,  0,    0.5},
+    {Tail,  0.2,  0.5,  0.2},
+    {Left,  0,    0.8,  0.05},
+    {Right, 0,    0.8,  0.05},
+    {Tail,  0,    0.8,  0.2}
+  },
+  .gait_time=2,
+  .motor_max_value=90
 };
 
-Gait WormL = {
-  {Tail,  0.68,  0,    0.2},
-  {Left,  0.9,  0,    0.5},
-  {Right, 0.5,  0,    0.5},
-  {Tail,  0.2,  0.5,  0.2},
-  {Left,  0,    0.8,  0.05},
-  {Right, 0,    0.8,  0.05},
-  {Tail,  0,    0.8,  0.2},
+GaitStruct WormL = {
+  .gait={
+    {Tail,  0.68,  0,    0.2},
+    {Left,  0.9,  0,    0.5},
+    {Right, 0.5,  0,    0.5},
+    {Tail,  0.2,  0.5,  0.2},
+    {Left,  0,    0.8,  0.05},
+    {Right, 0,    0.8,  0.05},
+    {Tail,  0,    0.8,  0.2}
+  },
+  .gait_time=2,
+  .motor_max_value=90
 };
 
-Gait Lesgo = {
-  {Tail,  0.9,  0,    0.05},
-  {Right,  1.0,  0,    0.05},
-  {Left,  1.0,  0,    0.05},
-  {Tail,  0,    0.05,  0.95},
+GaitStruct Lesgo = {
+  .gait={
+    {Tail,  0.9,  0,    0.05},
+    {Right,  1.0,  0,    0.05},
+    {Left,  1.0,  0,    0.05},
+    {Tail,  0,    0.05,  0.95}
+  },
+  .gait_time=2,
+  .motor_max_value=90
 };
 
 GaitVector movementGaits = {Crawler, Worm, Jump, WormR, WormL, Lesgo};
@@ -97,7 +122,7 @@ void GaitMachine::gaitControl(Gait gait, std::chrono::microseconds deltaT){
     if(T_in_gait >= cmd_start_time && T_in_gait < cmd_end_time){
       float elapsed_time_in_cmd = (T_in_gait - cmd_start_time) / (cmd_end_time - cmd_start_time);
       
-      M_pos[cmd.motorID-1] = prev_M_pos[cmd.motorID-1] + ((cmd.amount * GAIT_AMP) - prev_M_pos[cmd.motorID-1]) * elapsed_time_in_cmd;
+      M_pos[cmd.motorID-1] = prev_M_pos[cmd.motorID-1] + (cmd.amount - prev_M_pos[cmd.motorID-1]) * elapsed_time_in_cmd;
     }
   }
 
@@ -113,7 +138,7 @@ void GaitMachine::setup(){
   last_call = tick_start;
 }
 
-Gait GaitMachine::selectGait(bluetoothHandler::direction movement)
+GaitStruct GaitMachine::selectGait(bluetoothHandler::direction movement)
 {
   using namespace bluetoothHandler;
   if (movement == direction::None)
@@ -123,10 +148,13 @@ Gait GaitMachine::selectGait(bluetoothHandler::direction movement)
 }
 
 std::array<uint8_t, 3> GaitMachine::loop(bluetoothHandler::direction movement){
-  Gait gaitSelected = selectGait(movement);
+  auto [gaitSelected, gait_time, motor_max_value] = selectGait(movement);
+  GAIT_T = gait_time;
+  MOTOR_MAX_VAL = motor_max_value;
 
   if (gaitSelected.size() != 0)
   {
+
     auto now = steady_clock::now();
     
     if(tick_start == last_call){
