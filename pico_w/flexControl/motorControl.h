@@ -40,14 +40,9 @@ class MotorControl
 
     Servo servo[NUM_SERVOS]; // create servo object to control servos
     uint8_t servoPins[NUM_SERVOS] = {19,20,21}; // Servo blue TG9E, Gaffa black, Black without gaffa
-    uint16_t servoMins[NUM_SERVOS] = {550,550,750}; // Servo blue TG9E, Gaffa black, Black without gaffa
-    uint16_t servoMaxs[NUM_SERVOS] = {2450,2300,2500}; // Servo blue TG9E, Gaffa black, Black without gaffa
-    uint8_t initServoVals[NUM_SERVOS] = {0,0,0}; // Initializes to zero {Servo blue TG9E, Gaffa black, Black without gaffa}
-
-    float commandFreq = 1000;
-    microseconds commandTime = duration_cast<microseconds>(std::chrono::duration<float>(1/commandFreq));
-
-    std::chrono::time_point<std::chrono::steady_clock> last_call;
+    uint16_t servoMins[NUM_SERVOS] = {544,544,544}; // Servo blue TG9E, Gaffa black, Black without gaffa
+    uint16_t servoMaxs[NUM_SERVOS] = {2400,2400,2400}; // Servo blue TG9E, Gaffa black, Black without gaffa
+    std::array<uint8_t, NUM_SERVOS> servoVals = {0,0,0}; // Initializes to zero {Servo blue TG9E, Gaffa black, Black without gaffa}
 };
 
 #endif

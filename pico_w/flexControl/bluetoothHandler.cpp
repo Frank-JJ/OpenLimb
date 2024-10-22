@@ -99,8 +99,8 @@ direction BluetoothHandler::loop()
     Serial.printf("hid running: no\n");
     hid_running = false;
   }
-  if (movement != None)
-    Serial.printf("movement:%i\n", movement);
+  // if (movement != None)
+  //   Serial.printf("movement:%i\n", movement);
 
   return movement;
 }
