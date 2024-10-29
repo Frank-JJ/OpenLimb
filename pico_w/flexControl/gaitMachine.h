@@ -24,8 +24,8 @@ namespace gaits{
 
   struct GaitStruct{
     Gait gait;
-    uint8_t gait_time = 2;   //Duration of the gait's repeating pattern (seconds)
-    uint8_t motor_max_value = 90; //Max degree of servos allowed
+    float gait_time = 2;   //Duration of the gait's repeating pattern (seconds)
+    float gait_amp = 1;
   };
 
   typedef std::vector<GaitStruct> GaitVector;
@@ -54,6 +54,7 @@ class GaitMachine
     std::array<float, 3> prev_M_pos = {0,0,0};
 
     uint8_t GAIT_T = 2;   //Duration of the gait's repeating pattern (seconds)
+    uint8_t GAIT_AMP = 1;   //Max degree of amplitude
     uint8_t MOTOR_MAX_VAL = 90; //Max degree of servos allowed
     
     float tick_frq = 100; //Hz

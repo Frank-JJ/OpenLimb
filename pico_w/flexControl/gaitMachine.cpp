@@ -15,7 +15,7 @@ GaitStruct Crawler = {
     {Right, 0, 0.95, 0.05}
   },
   .gait_time=2,
-  .motor_max_value=90
+  .gait_amp=0.5
 };
 
 GaitStruct Worm = {
@@ -29,7 +29,7 @@ GaitStruct Worm = {
     {Tail,  0,    0.8,  0.2}
   },
   .gait_time=1,
-  .motor_max_value=180
+  .gait_amp=1
 };
 
 GaitStruct Jump = {
@@ -38,7 +38,7 @@ GaitStruct Jump = {
     {Tail, 0.0, 0.4, 0.1}
   },
   .gait_time=2,
-  .motor_max_value=90
+  .gait_amp=0.5
 };
 
 GaitStruct WormR = {
@@ -52,7 +52,7 @@ GaitStruct WormR = {
     {Tail,  0,    0.8,  0.2}
   },
   .gait_time=2,
-  .motor_max_value=90
+  .gait_amp=0.5
 };
 
 GaitStruct WormL = {
@@ -66,7 +66,7 @@ GaitStruct WormL = {
     {Tail,  0,    0.8,  0.2}
   },
   .gait_time=2,
-  .motor_max_value=90
+  .gait_amp=0.5
 };
 
 GaitStruct Lesgo = {
@@ -77,7 +77,7 @@ GaitStruct Lesgo = {
     {Tail,  0,    0.05,  0.95}
   },
   .gait_time=2,
-  .motor_max_value=90
+  .gait_amp=0.5
 };
 
 GaitVector movementGaits = {Crawler, Worm, Jump, WormR, WormL, Lesgo};
@@ -93,7 +93,7 @@ GaitMachine::~GaitMachine()
 }
 
 int GaitMachine::mapToMotorValue(float M_pos){
-  return (int)(M_pos * MOTOR_MAX_VAL);
+  return (int)(M_pos * GAIT_AMP * MOTOR_MAX_VAL);
 }
 
 void GaitMachine::gaitControl(Gait gait, std::chrono::microseconds deltaT){
@@ -147,10 +147,10 @@ GaitStruct GaitMachine::selectGait(bluetoothHandler::direction movement)
     return movementGaits[movement-1]; // None is the 0'th value, so the size of movement is 6, which is 1 larger than movementGaits
 }
 
-std::array<uint8_t, 3> GaitMachine::loop(bluetoothHandler::direction movement){
-  auto [gaitSelected, gait_time, motor_max_value] = selectGait(movement);
+std::array<uint8_t, 3> GaitMachine::loop(){
+  auto [gaitSelected, gait_time, gait_amp, direction] = selectGait(movement);
   GAIT_T = gait_time;
-  MOTOR_MAX_VAL = motor_max_value;
+  GAIT_AMP = gait_amp;
 
   if (gaitSelected.size() != 0)
   {

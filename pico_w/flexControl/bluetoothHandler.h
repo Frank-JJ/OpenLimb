@@ -8,9 +8,15 @@
 
 
 namespace bluetoothHandler{
-  enum direction{None, Forwards, Backwards, Left, Right, RotateLeft, RotateRight};
+  enum class DirectionGait{None, Forwards, Backwards, Left, Right};
+  enum class LeftJoystick{None, Forwards, Backwards, Left, Right};
+  enum class RightJoystick{None, Forwards, Backwards, Left, Right};
+  enum class TheFourButtonsOnTheFrontOfTheController{None, X, Y, B, A};
   
-  static direction movement;
+  static DirectionGait directionGait;
+  static LeftJoystick leftJoystick;
+  static RightJoystick rightJoystick;
+  static TheFourButtonsOnTheFrontOfTheController buttonsGait;
 };
 
 class BluetoothHandler
@@ -20,7 +26,7 @@ class BluetoothHandler
     ~BluetoothHandler();
     static void joy(void *cbdata, int x, int y, int z, int rz, uint8_t hat, uint32_t buttons);
     void setup();
-    bluetoothHandler::direction loop();
+    loop();
 
   private:
     BluetoothHIDMaster hid;

@@ -17,42 +17,42 @@ BluetoothHandler::~BluetoothHandler()
 // Axes and hats that aren't reported by the joystick are read as 0
 void BluetoothHandler::joy(void *cbdata, int x, int y, int z, int rz, uint8_t hat, uint32_t buttons) 
 {
-  // (void) cbdata;
-  // const char *hats[16] = { "U", "UR", "R", "DR", "D", "DL", "L", "UL", "", "", "", "", "", "", "", "." };
-  // Serial.printf("Joystick: (%4d, %4d) (%4d, %4d), Hat: %-2s, Buttons:", x, y, z, rz, hats[hat & 15]);
-  // for (int i = 0; i < 32; i++) {
-  //   Serial.printf(" %c", (buttons & 1 << i) ? '*' : '.');
-  // }
-  // Serial.println();
+  (void) cbdata;
+  const char *hats[16] = { "U", "UR", "R", "DR", "D", "DL", "L", "UL", "", "", "", "", "", "", "", "." };
+  Serial.printf("Joystick: (%4d, %4d) (%4d, %4d), Hat: %-2s, Buttons:", x, y, z, rz, hats[hat & 15]);
+  for (int i = 0; i < 32; i++) {
+    Serial.printf(" %c", (buttons & 1 << i) ? '*' : '.');
+  }
+  Serial.println();
 
-  if (z > 256*0.9) 
-  {
-    movement = RotateRight;
-  }
-  else if (z < 256*0.1) 
-  {
-    movement = RotateLeft;
-  }
-  else if (x > 256*0.9) 
-  {
-    movement = Right;
-  }
-  else if (x < 256*0.1) 
-  {
-    movement = Left;
-  }
-  else if (y < 256*0.1) 
-  {
-    movement = Forwards;
-  }
-  else if (y > 256*0.9) 
-  {
-    movement = Backwards;
-  }
-  else
-  {
-    movement = None;
-  }
+  // if (z > 256*0.9) 
+  // {
+  //   movement = RotateRight;
+  // }
+  // else if (z < 256*0.1) 
+  // {
+  //   movement = RotateLeft;
+  // }
+  // else if (x > 256*0.9) 
+  // {
+  //   movement = Right;
+  // }
+  // else if (x < 256*0.1) 
+  // {
+  //   movement = Left;
+  // }
+  // else if (y < 256*0.1) 
+  // {
+  //   movement = Forwards;
+  // }
+  // else if (y > 256*0.9) 
+  // {
+  //   movement = Backwards;
+  // }
+  // else
+  // {
+  //   movement = None;
+  // }
 }
 
 void BluetoothHandler::setup()
@@ -66,7 +66,7 @@ void BluetoothHandler::setup()
   hid.connectJoystick();
 }
 
-direction BluetoothHandler::loop()
+void BluetoothHandler::loop()
 {
   if (BOOTSEL) 
   {
@@ -101,6 +101,4 @@ direction BluetoothHandler::loop()
   }
   // if (movement != None)
   //   Serial.printf("movement:%i\n", movement);
-
-  return movement;
 }
