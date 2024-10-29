@@ -55,32 +55,7 @@ GaitStruct WormR = {
   .gait_amp=0.5
 };
 
-GaitStruct WormL = {
-  .gait={
-    {Tail,  0.68,  0,    0.2},
-    {Left,  0.9,  0,    0.5},
-    {Right, 0.5,  0,    0.5},
-    {Tail,  0.2,  0.5,  0.2},
-    {Left,  0,    0.8,  0.05},
-    {Right, 0,    0.8,  0.05},
-    {Tail,  0,    0.8,  0.2}
-  },
-  .gait_time=2,
-  .gait_amp=0.5
-};
-
-GaitStruct Lesgo = {
-  .gait={
-    {Tail,  0.9,  0,    0.05},
-    {Right,  1.0,  0,    0.05},
-    {Left,  1.0,  0,    0.05},
-    {Tail,  0,    0.05,  0.95}
-  },
-  .gait_time=2,
-  .gait_amp=0.5
-};
-
-GaitVector movementGaits = {Crawler, Worm, Jump, WormR, WormL, Lesgo};
+GaitVector movementGaits = {Crawler, Worm, Jump, WormR};
 
 GaitMachine::GaitMachine()
 {
@@ -141,16 +116,19 @@ void GaitMachine::setup(){
 GaitStruct GaitMachine::selectGait()
 {
   using namespace bluetoothHandler;
-  if (movement == direction::None)
+  if (directionGait == DirectionGait::None)
     return {};
   else
     return movementGaits[movement-1]; // None is the 0'th value, so the size of movement is 6, which is 1 larger than movementGaits
+
+  if ()
 }
 
 std::array<uint8_t, 3> GaitMachine::loop(){
   auto [gaitSelected, gait_time, gait_amp, direction] = selectGait();
   GAIT_T = gait_time;
   GAIT_AMP = gait_amp;
+  MODE_DIR = direction;
 
   if (gaitSelected.size() != 0)
   {

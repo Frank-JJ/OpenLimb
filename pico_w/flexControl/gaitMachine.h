@@ -29,6 +29,12 @@ namespace gaits{
   };
 
   typedef std::vector<GaitStruct> GaitVector;
+
+  struct GaitSelectionInfo{
+    GaitStruct gaitStruct;
+    float gait_time = 
+    float direction;
+  };
 }
 
 using namespace gaits;
