@@ -13,8 +13,8 @@ MotorControl::~MotorControl()
 void MotorControl::setup() {
 	for (size_t i = 0; i < NUM_SERVOS; i++)
 	{
-		servo[i].write(servoVals[i]); // Initial servo angle
 		servo[i].attach(servoPins[i], servoMins[i], servoMaxs[i]);  // Servo pin
+		servo[i].write(servoVals[i]); // Initial servo angle
 	}
 
 	Serial.println("MotorControl started!");
