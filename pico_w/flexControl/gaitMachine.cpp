@@ -3,32 +3,23 @@
 
 using namespace gaits;
 
-GaitStruct Crawler = {
+GaitStruct MAX_MOTOR = {
   .gait={
-    {Tail, 0.7, 0, 0.05},
-    {Left, 0.9, 0.05, 0.35},
-    {Tail, 0, 0.1, 0.3},
-    {Left, 0, 0.45, 0.05},
-    {Tail, 0.7, 0.5, 0.05},
-    {Right, 0.9, 0.55, 0.35},
-    {Tail, 0, 0.6, 0.3},
-    {Right, 0, 0.95, 0.05}
+    {Tail, 1, 0, 0.2},
+    {Left, 1, 0, 0.2},
+    {Right, 1, 0, 0.2}
   },
-  .gait_time=2,
-  .motor_max_value=90
+  .gait_time=5,
+  .motor_max_value=180
 };
 
-GaitStruct Worm = {
+GaitStruct MIN_MOTOR = {
   .gait={
-    {Tail,  0.68,  0,    0.2},
-    {Left,  0.9,  0,    0.5},
-    {Right, 0.9,  0,    0.5},
-    {Tail,  0.2,  0.5,  0.2},
-    {Left,  0,    0.8,  0.05},
-    {Right, 0,    0.8,  0.05},
-    {Tail,  0,    0.8,  0.2}
+    {Tail, 0, 0, 0.2},
+    {Left, 0, 0, 0.2},
+    {Right, 0, 0, 0.2}
   },
-  .gait_time=1,
+  .gait_time=5,
   .motor_max_value=180
 };
 
@@ -80,7 +71,7 @@ GaitStruct Lesgo = {
   .motor_max_value=90
 };
 
-GaitVector movementGaits = {Crawler, Worm, Jump, WormR, WormL, Lesgo};
+GaitVector movementGaits = {MAX_MOTOR, MIN_MOTOR, Jump, WormR, WormL, Lesgo};
 
 GaitMachine::GaitMachine()
 {
