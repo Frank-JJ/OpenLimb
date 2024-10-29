@@ -138,7 +138,7 @@ void GaitMachine::setup(){
   last_call = tick_start;
 }
 
-GaitStruct GaitMachine::selectGait(bluetoothHandler::direction movement)
+GaitStruct GaitMachine::selectGait()
 {
   using namespace bluetoothHandler;
   if (movement == direction::None)
@@ -148,7 +148,7 @@ GaitStruct GaitMachine::selectGait(bluetoothHandler::direction movement)
 }
 
 std::array<uint8_t, 3> GaitMachine::loop(){
-  auto [gaitSelected, gait_time, gait_amp, direction] = selectGait(movement);
+  auto [gaitSelected, gait_time, gait_amp, direction] = selectGait();
   GAIT_T = gait_time;
   GAIT_AMP = gait_amp;
 

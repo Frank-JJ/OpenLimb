@@ -53,9 +53,10 @@ class GaitMachine
     std::array<float, 3> M_pos = {0,0,0};
     std::array<float, 3> prev_M_pos = {0,0,0};
 
-    uint8_t GAIT_T = 2;   //Duration of the gait's repeating pattern (seconds)
-    uint8_t GAIT_AMP = 1;   //Max degree of amplitude
-    uint8_t MOTOR_MAX_VAL = 90; //Max degree of servos allowed
+    float GAIT_T = 2;   //Duration of the gait's repeating pattern (seconds)
+    float GAIT_AMP = 1;   //Max degree of amplitude
+    float MOTOR_MAX_VAL = 90; //Max degree of servos allowed
+    float MODE_DIR = 0; //Mode direction of gait - for three legs it is 
     
     float tick_frq = 100; //Hz
     microseconds tick_Time = duration_cast<microseconds>(std::chrono::duration<float>(1/tick_frq));
