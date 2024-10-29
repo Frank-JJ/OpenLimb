@@ -113,15 +113,24 @@ void GaitMachine::setup(){
   last_call = tick_start;
 }
 
-GaitStruct GaitMachine::selectGait()
+GaitSelectionInfo GaitMachine::selectGait()
 {
   using namespace bluetoothHandler;
-  if (directionGait == DirectionGait::None)
+  if (arrowButtons == ArrowButtons::None)
     return {};
   else
-    return movementGaits[movement-1]; // None is the 0'th value, so the size of movement is 6, which is 1 larger than movementGaits
+  {
+    printf("arrowButtons: %i", static_cast<int>(arrowButtons));
+    auto selectedGait = movementGaits[static_cast<int>(arrowButtons)-1];
+    return {selectedGait.gait, selectedGait.gait_time, selectedGait.gait_amp, 0}; // None is the 0'th value, so the size of movement is 6, which is 1 larger than movementGaits
+  }
 
-  if ()
+  if (buttons == TheFourButtonsOnTheFrontOfTheController::None)
+  {
+    return {};
+  }
+  auto selectedGait = movementGaits[static_cast<int>(buttons)-1];
+  return {selectedGait.gait, rightJoystickUpDown, leftJoystickUpDown, rightJoystickLeftRight};
 }
 
 std::array<uint8_t, 3> GaitMachine::loop(){

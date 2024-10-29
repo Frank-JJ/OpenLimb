@@ -17,42 +17,68 @@ BluetoothHandler::~BluetoothHandler()
 // Axes and hats that aren't reported by the joystick are read as 0
 void BluetoothHandler::joy(void *cbdata, int x, int y, int z, int rz, uint8_t hat, uint32_t buttons) 
 {
-  (void) cbdata;
-  const char *hats[16] = { "U", "UR", "R", "DR", "D", "DL", "L", "UL", "", "", "", "", "", "", "", "." };
-  Serial.printf("Joystick: (%4d, %4d) (%4d, %4d), Hat: %-2s, Buttons:", x, y, z, rz, hats[hat & 15]);
-  for (int i = 0; i < 32; i++) {
-    Serial.printf(" %c", (buttons & 1 << i) ? '*' : '.');
-  }
-  Serial.println();
+  // (void) cbdata;
+  // const char *hats[16] = { "U", "UR", "R", "DR", "D", "DL", "L", "UL", "", "", "", "", "", "", "", "." };
+  // Serial.printf("Joystick: (%4d, %4d) (%4d, %4d), Hat: %-2s, Buttons:", x, y, z, rz, hats[hat & 15]);
+  // for (int i = 0; i < 32; i++) {
+  //   Serial.printf(" %c", (buttons & 1 << i) ? '*' : '.');
+  // }
+  // Serial.println();
 
-  // if (z > 256*0.9) 
-  // {
-  //   movement = RotateRight;
-  // }
-  // else if (z < 256*0.1) 
-  // {
-  //   movement = RotateLeft;
-  // }
-  // else if (x > 256*0.9) 
-  // {
-  //   movement = Right;
-  // }
-  // else if (x < 256*0.1) 
-  // {
-  //   movement = Left;
-  // }
-  // else if (y < 256*0.1) 
-  // {
-  //   movement = Forwards;
-  // }
-  // else if (y > 256*0.9) 
-  // {
-  //   movement = Backwards;
-  // }
-  // else
-  // {
-  //   movement = None;
-  // }
+  // Get arrow buttons output
+  auto arrows = hat & 15;
+  if (arrows == 0)
+  {
+    arrowButtons = ArrowButtons::Forwards;
+  }
+  else if(arrows == 4)
+  {
+    arrowButtons = ArrowButtons::Backwards;
+  }
+  else if(arrows == 6)
+  {
+    arrowButtons = ArrowButtons::Left;
+  }
+  else if(arrows == 2)
+  {
+    arrowButtons = ArrowButtons::Right;
+  }
+  else
+  {
+    arrowButtons = ArrowButtons::None;
+  }
+
+  // Get left joystick up-down output
+  leftJoystickUpDown = 1 - (y / 256);
+  
+  // Get right joystick up-down output
+  rightJoystickUpDown = 1 - (rz / 256);
+  
+  
+  // Get right joystick left-right output
+  rightJoystickLeftRight = z / 256;
+  
+
+  if (buttons & 1 << 12)
+  {
+    bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::None;
+  }
+  else if (buttons & 1 << 3)
+  {
+    bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::X;
+  }
+  else if (buttons & 1 << 1)
+  {
+    bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::B;
+  }
+  else if (buttons & 1 << 4)
+  {
+    bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::Y;
+  }
+  else if (buttons & 1 << 0)
+  {
+    bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::A;
+  }
 }
 
 void BluetoothHandler::setup()

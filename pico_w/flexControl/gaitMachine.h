@@ -31,9 +31,10 @@ namespace gaits{
   typedef std::vector<GaitStruct> GaitVector;
 
   struct GaitSelectionInfo{
-    GaitStruct gaitStruct;
-    float gait_time = 
-    float direction;
+    Gait gait;
+    float gait_time = 2;
+    float gait_amp = 1;
+    float direction = 0;
   };
 }
 
@@ -46,12 +47,12 @@ class GaitMachine
     GaitMachine();
     ~GaitMachine();
     void setup();
-    std::array<uint8_t, 3> loop(bluetoothHandler::direction movement);
+    std::array<uint8_t, 3> loop();
 
   private:
     int mapToMotorValue(float M_pos);
     void gaitControl(Gait gait, std::chrono::microseconds deltaT = std::chrono::microseconds(0));
-    GaitStruct selectGait(bluetoothHandler::direction movement);
+    GaitSelectionInfo selectGait();
     
     std::array<int8_t, 3> running_commands = {-1,-1,-1};
 
