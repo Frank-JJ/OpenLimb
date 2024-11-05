@@ -47,12 +47,12 @@ class GaitMachine
     GaitMachine();
     ~GaitMachine();
     void setup();
-    std::array<uint8_t, 3> loop();
+    std::array<uint8_t, 3> loop(bluetoothHandler::BluetoothOutput btIn);
 
   private:
     int mapToMotorValue(float M_pos);
     void gaitControl(Gait gait, std::chrono::microseconds deltaT = std::chrono::microseconds(0));
-    GaitSelectionInfo selectGait();
+    GaitSelectionInfo selectGait(bluetoothHandler::BluetoothOutput btIn);
     
     std::array<int8_t, 3> running_commands = {-1,-1,-1};
 

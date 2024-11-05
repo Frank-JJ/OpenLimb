@@ -113,28 +113,29 @@ void GaitMachine::setup(){
   last_call = tick_start;
 }
 
-GaitSelectionInfo GaitMachine::selectGait()
+GaitSelectionInfo GaitMachine::selectGait(BluetoothOutput btIn)
 {
   using namespace bluetoothHandler;
-  if (arrowButtons == ArrowButtons::None)
+  Serial.printf("arrowButtons: %i | leftJoystickUpDown: %f | rightJoystickUpDown: %f | rightJoystickLeftRight: %f | bluetoothHandler: %i\n", btIn.arrowButtons, btIn.leftJoystickUpDown, btIn.rightJoystickUpDown, btIn.rightJoystickLeftRight, btIn.bluetoothHandler::buttons);
+  if (btIn.arrowButtons == ArrowButtons::None)
     return {};
   else
   {
-    printf("arrowButtons: %i", static_cast<int>(arrowButtons));
-    auto selectedGait = movementGaits[static_cast<int>(arrowButtons)-1];
-    return {selectedGait.gait, selectedGait.gait_time, selectedGait.gait_amp, 0}; // None is the 0'th value, so the size of movement is 6, which is 1 larger than movementGaits
+    Serial.printf("arrowButtons: %i", static_cast<int>(btIn.arrowButtons));
+    auto selectedGait = movementGaits[static_cast<int>(btIn.arrowButtons)-1];
+    return {selectedGait.gait, selectedGait.gait_time, selectedGait.gait_amp, 0};
   }
 
-  if (buttons == TheFourButtonsOnTheFrontOfTheController::None)
+  if (btIn.buttons == TheFourButtonsOnTheFrontOfTheController::None)
   {
     return {};
   }
-  auto selectedGait = movementGaits[static_cast<int>(buttons)-1];
-  return {selectedGait.gait, rightJoystickUpDown, leftJoystickUpDown, rightJoystickLeftRight};
+  auto selectedGait = movementGaits[static_cast<int>(btIn.buttons)-1];
+  return {selectedGait.gait, btIn.rightJoystickUpDown, btIn.leftJoystickUpDown, btIn.rightJoystickLeftRight};
 }
 
-std::array<uint8_t, 3> GaitMachine::loop(){
-  auto [gaitSelected, gait_time, gait_amp, direction] = selectGait();
+std::array<uint8_t, 3> GaitMachine::loop(BluetoothOutput btIn){
+  auto [gaitSelected, gait_time, gait_amp, direction] = selectGait(btIn);
   GAIT_T = gait_time;
   GAIT_AMP = gait_amp;
   MODE_DIR = direction;

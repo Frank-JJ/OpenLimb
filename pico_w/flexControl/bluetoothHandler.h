@@ -17,6 +17,15 @@ namespace bluetoothHandler{
   static float rightJoystickUpDown = 0;
   static float rightJoystickLeftRight = 0;
   static TheFourButtonsOnTheFrontOfTheController buttons;
+  
+  struct BluetoothOutput{
+    ArrowButtons arrowButtons;
+    float leftJoystickUpDown;
+    float leftJoystickLeftRight;
+    float rightJoystickUpDown;
+    float rightJoystickLeftRight;
+    TheFourButtonsOnTheFrontOfTheController buttons;
+  };
 };
 
 class BluetoothHandler
@@ -26,7 +35,7 @@ class BluetoothHandler
     ~BluetoothHandler();
     static void joy(void *cbdata, int x, int y, int z, int rz, uint8_t hat, uint32_t buttons);
     void setup();
-    void loop();
+    bluetoothHandler::BluetoothOutput loop();
 
   private:
     BluetoothHIDMaster hid;
