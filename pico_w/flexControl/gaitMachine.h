@@ -11,7 +11,7 @@
 #include "bluetoothHandler.h"
 
 namespace gaits{
-  enum Motors {Left=1, Right=2, Tail=3};
+  enum Motors {Right=0, Tail=1, Left=2};
 
   struct motorCMD{
     int motorID;
@@ -35,7 +35,18 @@ namespace gaits{
     float gait_time = 2;
     float gait_amp = 1;
     float direction = 0;
+    float gait_time_modifier = 1;
   };
+
+  enum class BodySide {Left=1, Right=2, Center=3};
+  enum class ServoSide {Left=1, Right=2};
+
+  struct MotorConfig{
+    BodySide bodySide;
+    ServoSide servoSide;
+  };
+
+  typedef std::vector<MotorConfig> MotorConfigVector;
 }
 
 using namespace gaits;
@@ -59,13 +70,15 @@ class GaitMachine
     std::array<uint8_t, 3> program_end_motorpos = {0,0,0};
     std::array<float, 3> M_pos = {0,0,0};
     std::array<float, 3> prev_M_pos = {0,0,0};
+    std::array<float, 3> prev_final_M_pos = {0,0,0};
 
     float GAIT_T = 2;   //Duration of the gait's repeating pattern (seconds)
     float GAIT_AMP = 1;   //Max degree of amplitude
-    float MOTOR_MAX_VAL = 90; //Max degree of servos allowed
+    float MOTOR_MAX_VAL = 180; //Max degree of servos allowed
     float MODE_DIR = 0; //Mode direction of gait - for three legs it is 
+    float GAIT_T_AMP = 1;
     
-    float tick_frq = 100; //Hz
+    float tick_frq = 200; //Hz
     microseconds tick_Time = duration_cast<microseconds>(std::chrono::duration<float>(1/tick_frq));
 
     std::array<uint8_t, 3> motor_pos_array;

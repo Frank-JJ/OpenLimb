@@ -130,5 +130,11 @@ BluetoothOutput BluetoothHandler::loop()
   // if (movement != None)
   //   Serial.printf("movement:%i\n", movement);
   // Serial.printf("arrowButtons: %i | leftJoystickUpDown: %f | rightJoystickUpDown: %f | rightJoystickLeftRight: %f | bluetoothHandler: %i\n", arrowButtons, leftJoystickUpDown, rightJoystickUpDown, rightJoystickLeftRight, bluetoothHandler::buttons);
-  return {arrowButtons, leftJoystickUpDown, rightJoystickUpDown, rightJoystickLeftRight, bluetoothHandler::buttons};
+  // return {arrowButtons, leftJoystickUpDown, rightJoystickUpDown, rightJoystickLeftRight, bluetoothHandler::buttons};
+  return {arrowButtons,
+    leftJoystickUpDown,
+    leftJoystickLeftRight,
+    rightJoystickUpDown,
+    rightJoystickLeftRight,
+    buttons};
 }
