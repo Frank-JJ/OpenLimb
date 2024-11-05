@@ -132,25 +132,25 @@ void GaitMachine::gaitControl(Gait gait, std::chrono::microseconds deltaT){
   prev_final_M_pos[1] = M_pos[1];
   prev_final_M_pos[2] = M_pos[2];
 
-  // for (int i = 0; i < motorConfigVector.size(); i++)
-  // {
-  //   if (motorConfigVector[i].servoSide == ServoSide::Right)
-  //   {
-  //     M_pos[i] = 1 - M_pos[i];
-  //     Serial.printf("ServoSide::Right");
-  //   }
-  //   if (motorConfigVector[i].bodySide == BodySide::Left)
-  //   {
-  //     M_pos[i] = M_pos[i] * (MODE_DIR*2);
-  //     Serial.printf(" BodySide::Left");
-  //   }
-  //   else if(motorConfigVector[i].bodySide == BodySide::Right)
-  //   {
-  //     M_pos[i] = M_pos[i] * MODE_DIR;
-  //     Serial.printf(" BodySide::Right");
-  //   }
-  //   Serial.printf("\n");
-  // }
+  for (int i = 0; i < motorConfigVector.size(); i++)
+  {
+    if (motorConfigVector[i].servoSide == ServoSide::Right)
+    {
+      M_pos[i] = 1 - M_pos[i];
+      Serial.printf("ServoSide::Right");
+    }
+    if (motorConfigVector[i].bodySide == BodySide::Left)
+    {
+      M_pos[i] = M_pos[i] * min(1, 2 - MODE_DIR*2);
+      Serial.printf(" BodySide::Left");
+    }
+    else if(motorConfigVector[i].bodySide == BodySide::Right)
+    {
+      M_pos[i] = M_pos[i] * min(1, MODE_DIR*2);
+      Serial.printf(" BodySide::Right");
+    }
+    Serial.printf("\n");
+  }
 
   M1_mapped = mapToMotorValue(M_pos[0]);
   M2_mapped = mapToMotorValue(M_pos[1]);
