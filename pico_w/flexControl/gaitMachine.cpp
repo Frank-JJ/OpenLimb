@@ -119,12 +119,12 @@ void GaitMachine::gaitControl(Gait gait, std::chrono::microseconds deltaT){
   for(const auto& cmd : gait){
     float cmd_start_time = cmd.start * GAIT_T*GAIT_T_AMP, cmd_end_time = (cmd.start + cmd.duration) * GAIT_T*GAIT_T_AMP;
     if (T_in_gait < cmd_start_time || T_in_gait >= cmd_end_time){
-      prev_M_pos[cmd.motorID-1] = cmd.amount;
+      prev_M_pos[cmd.motorID] = cmd.amount;
     }
     if(T_in_gait >= cmd_start_time && T_in_gait < cmd_end_time){
       float elapsed_time_in_cmd = (T_in_gait - cmd_start_time) / (cmd_end_time - cmd_start_time);
       
-      M_pos[cmd.motorID-1] = prev_M_pos[cmd.motorID-1] + (cmd.amount - prev_M_pos[cmd.motorID-1]) * elapsed_time_in_cmd;
+      M_pos[cmd.motorID] = prev_M_pos[cmd.motorID] + (cmd.amount - prev_M_pos[cmd.motorID]) * elapsed_time_in_cmd;
     }
   }
 

@@ -14,7 +14,7 @@ namespace gaits{
   enum Motors {Right=0, Tail=1, Left=2};
 
   struct motorCMD{
-    int motorID;
+    Motors motorID;
     float amount;
     float start;
     float duration;
@@ -38,8 +38,8 @@ namespace gaits{
     float gait_time_modifier = 1;
   };
 
-  enum class BodySide {Left=1, Right=2, Center=3};
-  enum class ServoSide {Left=1, Right=2};
+  enum class BodySide {Left=0, Right=1, Center=2};
+  enum class ServoSide {Left=0, Right=1};
 
   struct MotorConfig{
     BodySide bodySide;
