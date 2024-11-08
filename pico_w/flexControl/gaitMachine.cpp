@@ -113,9 +113,9 @@ void GaitMachine::gaitControl(Gait gait, std::chrono::microseconds deltaT){
     T_in_gait -= GAIT_T*GAIT_T_AMP;
   }
 
-  prev_M_pos[0] = prev_final_M_pos[0];
-  prev_M_pos[1] = prev_final_M_pos[1];
-  prev_M_pos[2] = prev_final_M_pos[2];
+  prev_M_pos[0] = 0;
+  prev_M_pos[1] = 0;
+  prev_M_pos[2] = 0;
   for(const auto& cmd : gait){
     float cmd_start_time = cmd.start * GAIT_T*GAIT_T_AMP, cmd_end_time = (cmd.start + cmd.duration) * GAIT_T*GAIT_T_AMP;
     if (T_in_gait < cmd_start_time || T_in_gait >= cmd_end_time){
@@ -127,10 +127,6 @@ void GaitMachine::gaitControl(Gait gait, std::chrono::microseconds deltaT){
       M_pos[cmd.motorID] = prev_M_pos[cmd.motorID] + (cmd.amount - prev_M_pos[cmd.motorID]) * elapsed_time_in_cmd;
     }
   }
-
-  prev_final_M_pos[0] = M_pos[0];
-  prev_final_M_pos[1] = M_pos[1];
-  prev_final_M_pos[2] = M_pos[2];
 
   for (int i = 0; i < motorConfigVector.size(); i++)
   {

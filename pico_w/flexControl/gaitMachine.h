@@ -70,7 +70,6 @@ class GaitMachine
     std::array<uint8_t, 3> program_end_motorpos = {0,0,0};
     std::array<float, 3> M_pos = {0,0,0};
     std::array<float, 3> prev_M_pos = {0,0,0};
-    std::array<float, 3> prev_final_M_pos = {0,0,0};
 
     float GAIT_T = 2;   //Duration of the gait's repeating pattern (seconds)
     float GAIT_AMP = 1;   //Max degree of amplitude
