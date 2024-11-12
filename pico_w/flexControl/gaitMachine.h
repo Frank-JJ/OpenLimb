@@ -11,10 +11,10 @@
 #include "bluetoothHandler.h"
 
 namespace gaits{
-  enum Motors {Left=1, Right=2, Tail=3};
+  enum Motors {Right=0, Tail=1, Left=2};
 
   struct motorCMD{
-    int motorID;
+    Motors motorID;
     float amount;
     float start;
     float duration;
@@ -22,13 +22,34 @@ namespace gaits{
 
   typedef std::vector<motorCMD> Gait;
 
+
   struct GaitStruct{
+    std::vector<float> initialMotorPositions = {0,0,0};
     Gait gait;
-    uint8_t gait_time = 2;   //Duration of the gait's repeating pattern (seconds)
-    uint8_t motor_max_value = 90; //Max degree of servos allowed
+    float gait_time = 2;   //Duration of the gait's repeating pattern (seconds)
+    float gait_amp = 1;
   };
 
   typedef std::vector<GaitStruct> GaitVector;
+
+  struct GaitSelectionInfo{
+    std::vector<float> motor_init = {0,0,0};
+    Gait gait;
+    float gait_time = 2;
+    float gait_amp = 1;
+    float direction = 0;
+    float gait_time_modifier = 1;
+  };
+
+  enum class BodySide {Left=0, Right=1, Center=2};
+  enum class ServoSide {Left=0, Right=1};
+
+  struct MotorConfig{
+    BodySide bodySide;
+    ServoSide servoSide;
+  };
+
+  typedef std::vector<MotorConfig> MotorConfigVector;  
 }
 
 using namespace gaits;
@@ -40,12 +61,12 @@ class GaitMachine
     GaitMachine();
     ~GaitMachine();
     void setup();
-    std::array<uint8_t, 3> loop(bluetoothHandler::direction movement);
+    std::array<uint8_t, 3> loop(bluetoothHandler::BluetoothOutput btIn);
 
   private:
     int mapToMotorValue(float M_pos);
     void gaitControl(Gait gait, std::chrono::microseconds deltaT = std::chrono::microseconds(0));
-    GaitStruct selectGait(bluetoothHandler::direction movement);
+    GaitSelectionInfo selectGait(bluetoothHandler::BluetoothOutput btIn);
     
     std::array<int8_t, 3> running_commands = {-1,-1,-1};
 
@@ -53,10 +74,15 @@ class GaitMachine
     std::array<float, 3> M_pos = {0,0,0};
     std::array<float, 3> prev_M_pos = {0,0,0};
 
-    uint8_t GAIT_T = 2;   //Duration of the gait's repeating pattern (seconds)
-    uint8_t MOTOR_MAX_VAL = 90; //Max degree of servos allowed
+    std::vector<float> MOTOR_INIT = {0,0,0};
+    float GAIT_T = 2;   // Duration of the gait's repeating pattern (seconds).
+    float GAIT_AMP = 1;   // Max degree of amplitude.
+    float MOTOR_MAX_VAL = 180; // Max degree of servos allowed.
+    float MODE_DIR = 0; // Mode direction of gait. Goes from 0 to 1, where 0.5 is the center.
+    float directionCenter = 0.5;
+    float GAIT_T_AMP = 1; // Amplitude of gait duration. As in what to multiply GAIT_T with to get the final gait duration.
     
-    float tick_frq = 100; //Hz
+    float tick_frq = 200; // Hz
     microseconds tick_Time = duration_cast<microseconds>(std::chrono::duration<float>(1/tick_frq));
 
     std::array<uint8_t, 3> motor_pos_array;

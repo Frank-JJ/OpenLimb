@@ -2,76 +2,88 @@
 #include "gaitMachine.h"
 
 using namespace gaits;
+using namespace bluetoothHandler;
 
 GaitStruct MAX_MOTOR = {
+  .initialMotorPositions = {1,1,1},
   .gait={
-    {Tail, 1, 0, 0.2},
-    {Left, 1, 0, 0.2},
-    {Right, 1, 0, 0.2}
+    {Motors::Tail, 1, 0, 1},
+    {Motors::Left, 1, 0, 1},
+    {Motors::Right, 1, 0, 1}
   },
   .gait_time=5,
-  .motor_max_value=180
+  .gait_amp=1
 };
 
 GaitStruct MIN_MOTOR = {
   .gait={
-    {Tail, 0, 0, 0.2},
-    {Left, 0, 0, 0.2},
-    {Right, 0, 0, 0.2}
+    {Motors::Tail, 0, 0, 1},
+    {Motors::Left, 0, 0, 1},
+    {Motors::Right, 0, 0, 1}
   },
   .gait_time=5,
-  .motor_max_value=180
+  .gait_amp=1
+};
+
+GaitStruct Crawler = {
+  .gait={
+    {Motors::Tail, 0.7, 0, 0.05},
+    {Motors::Left, 0.9, 0.05, 0.35},
+    {Motors::Tail, 0, 0.1, 0.3},
+    {Motors::Left, 0, 0.45, 0.05},
+    {Motors::Tail, 0.7, 0.5, 0.05},
+    {Motors::Right, 0.9, 0.55, 0.35},
+    {Motors::Tail, 0, 0.6, 0.3},
+    {Motors::Right, 0, 0.95, 0.05}
+  },
+  .gait_time=2,
+  .gait_amp=0.5
+};
+
+GaitStruct Worm = {
+  .gait={
+    {Motors::Tail,  0.68,  0,    0.2},
+    {Motors::Left,  0.9,  0,    0.5},
+    {Motors::Right, 0.9,  0,    0.5},
+    {Motors::Tail,  0.2,  0.5,  0.2},
+    {Motors::Left,  0,    0.8,  0.05},
+    {Motors::Right, 0,    0.8,  0.05},
+    {Motors::Tail,  0,    0.8,  0.2}
+  },
+  .gait_time=1,
+  .gait_amp=1
 };
 
 GaitStruct Jump = {
   .gait={
-    {Tail, 1.0, 0, 0.001},
-    {Tail, 0.0, 0.4, 0.1}
+    {Motors::Tail, 1.0, 0, 0.001},
+    {Motors::Tail, 0.0, 0.4, 0.1}
   },
   .gait_time=2,
-  .motor_max_value=90
+  .gait_amp=0.5
 };
 
 GaitStruct WormR = {
   .gait={
-    {Tail,  0.68,  0,    0.2},
-    {Left,  0.5,  0,    0.5},
-    {Right, 0.9,  0,    0.5},
-    {Tail,  0.2,  0.5,  0.2},
-    {Left,  0,    0.8,  0.05},
-    {Right, 0,    0.8,  0.05},
-    {Tail,  0,    0.8,  0.2}
+    {Motors::Tail,  0.68,  0,    0.2},
+    {Motors::Left,  0.5,  0,    0.5},
+    {Motors::Right, 0.9,  0,    0.5},
+    {Motors::Tail,  0.2,  0.5,  0.2},
+    {Motors::Left,  0,    0.8,  0.05},
+    {Motors::Right, 0,    0.8,  0.05},
+    {Motors::Tail,  0,    0.8,  0.2}
   },
   .gait_time=2,
-  .motor_max_value=90
+  .gait_amp=0.5
 };
 
-GaitStruct WormL = {
-  .gait={
-    {Tail,  0.68,  0,    0.2},
-    {Left,  0.9,  0,    0.5},
-    {Right, 0.5,  0,    0.5},
-    {Tail,  0.2,  0.5,  0.2},
-    {Left,  0,    0.8,  0.05},
-    {Right, 0,    0.8,  0.05},
-    {Tail,  0,    0.8,  0.2}
-  },
-  .gait_time=2,
-  .motor_max_value=90
-};
+GaitVector movementGaits = {MAX_MOTOR, MIN_MOTOR, Jump, WormR};
 
-GaitStruct Lesgo = {
-  .gait={
-    {Tail,  0.9,  0,    0.05},
-    {Right,  1.0,  0,    0.05},
-    {Left,  1.0,  0,    0.05},
-    {Tail,  0,    0.05,  0.95}
-  },
-  .gait_time=2,
-  .motor_max_value=90
+MotorConfigVector motorConfigVector = {
+  {BodySide::Left, ServoSide::Left},
+  {BodySide::Right, ServoSide::Left},
+  {BodySide::Center, ServoSide::Left}
 };
-
-GaitVector movementGaits = {MAX_MOTOR, MIN_MOTOR, Jump, WormR, WormL, Lesgo};
 
 GaitMachine::GaitMachine()
 {
@@ -84,7 +96,7 @@ GaitMachine::~GaitMachine()
 }
 
 int GaitMachine::mapToMotorValue(float M_pos){
-  return (int)(M_pos * MOTOR_MAX_VAL);
+  return (int)min(MOTOR_MAX_VAL,(M_pos * GAIT_AMP * MOTOR_MAX_VAL));
 }
 
 void GaitMachine::gaitControl(Gait gait, std::chrono::microseconds deltaT){
@@ -97,24 +109,47 @@ void GaitMachine::gaitControl(Gait gait, std::chrono::microseconds deltaT){
   T_elapsed += deltaT_sec;
 
   
-  if(T_in_gait >= GAIT_T){ 
+  if(T_in_gait >= GAIT_T*GAIT_T_AMP){ 
     //Wrap around if the timing is exceeding the gait period
-    T_in_gait -= GAIT_T;
+    T_in_gait -= GAIT_T*GAIT_T_AMP;
   }
 
-  prev_M_pos[0] = 0;
-  prev_M_pos[1] = 0;
-  prev_M_pos[2] = 0;
+  prev_M_pos[0] = MOTOR_INIT[0];
+  prev_M_pos[1] = MOTOR_INIT[1];
+  prev_M_pos[2] = MOTOR_INIT[2];
+  M_pos[0] = MOTOR_INIT[0];
+  M_pos[1] = MOTOR_INIT[1];
+  M_pos[2] = MOTOR_INIT[2];
   for(const auto& cmd : gait){
-    float cmd_start_time = cmd.start * GAIT_T, cmd_end_time = (cmd.start + cmd.duration) * GAIT_T;
+    float cmd_start_time = cmd.start * GAIT_T*GAIT_T_AMP, cmd_end_time = (cmd.start + cmd.duration) * GAIT_T*GAIT_T_AMP;
     if (T_in_gait < cmd_start_time || T_in_gait >= cmd_end_time){
-      prev_M_pos[cmd.motorID-1] = cmd.amount;
+      prev_M_pos[cmd.motorID] = cmd.amount;
     }
     if(T_in_gait >= cmd_start_time && T_in_gait < cmd_end_time){
       float elapsed_time_in_cmd = (T_in_gait - cmd_start_time) / (cmd_end_time - cmd_start_time);
       
-      M_pos[cmd.motorID-1] = prev_M_pos[cmd.motorID-1] + (cmd.amount - prev_M_pos[cmd.motorID-1]) * elapsed_time_in_cmd;
+      M_pos[cmd.motorID] = prev_M_pos[cmd.motorID] + (cmd.amount - prev_M_pos[cmd.motorID]) * elapsed_time_in_cmd;
     }
+  }
+
+  for (int i = 0; i < motorConfigVector.size(); i++)
+  {
+    if (motorConfigVector[i].servoSide == ServoSide::Right)
+    {
+      M_pos[i] = 1 - M_pos[i];
+      // Serial.printf("ServoSide::Right");
+    }
+    if (motorConfigVector[i].bodySide == BodySide::Left)
+    {
+      M_pos[i] = M_pos[i] * min(1, 2 - MODE_DIR*2);
+      // Serial.printf(" BodySide::Left");
+    }
+    else if(motorConfigVector[i].bodySide == BodySide::Right)
+    {
+      M_pos[i] = M_pos[i] * min(1, MODE_DIR*2);
+      // Serial.printf(" BodySide::Right");
+    }
+    Serial.printf("\n");
   }
 
   M1_mapped = mapToMotorValue(M_pos[0]);
@@ -129,19 +164,33 @@ void GaitMachine::setup(){
   last_call = tick_start;
 }
 
-GaitStruct GaitMachine::selectGait(bluetoothHandler::direction movement)
+GaitSelectionInfo GaitMachine::selectGait(BluetoothOutput btIn)
 {
-  using namespace bluetoothHandler;
-  if (movement == direction::None)
-    return {};
-  else
-    return movementGaits[movement-1]; // None is the 0'th value, so the size of movement is 6, which is 1 larger than movementGaits
+  // Serial.printf("arrowButtons: %i | leftJoystickUpDown: %f | rightJoystickUpDown: %f | rightJoystickLeftRight: %f | bluetoothHandler: %i\n", btIn.arrowButtons, btIn.leftJoystickUpDown, btIn.rightJoystickUpDown, btIn.rightJoystickLeftRight, btIn.buttons);
+  if (btIn.arrowButtons != ArrowButtons::None)
+  {
+    // Serial.printf("arrowButtons: %i\n", static_cast<int>(btIn.arrowButtons));
+    auto selectedGait = movementGaits[static_cast<int>(btIn.arrowButtons)-1];
+    return {selectedGait.initialMotorPositions, selectedGait.gait, selectedGait.gait_time, selectedGait.gait_amp, directionCenter, 1};
+  }
+
+  if (btIn.buttons != TheFourButtonsOnTheFrontOfTheController::None)
+  {
+    auto selectedGait = movementGaits[static_cast<int>(btIn.buttons)-1];
+    // Serial.printf("btIn.buttons: %i\n", static_cast<int>(btIn.buttons)-1);
+    return {selectedGait.initialMotorPositions, selectedGait.gait, selectedGait.gait_time, btIn.leftJoystickUpDown*2, btIn.rightJoystickLeftRight, (1-btIn.rightJoystickUpDown)*2};
+  }
+  return {};
 }
 
-std::array<uint8_t, 3> GaitMachine::loop(bluetoothHandler::direction movement){
-  auto [gaitSelected, gait_time, motor_max_value] = selectGait(movement);
+std::array<uint8_t, 3> GaitMachine::loop(BluetoothOutput btIn){
+  auto [motor_init, gaitSelected, gait_time, gait_amp, direction, gait_time_modifier] = selectGait(btIn);
+  // Serial.printf("gaitSelected: %f, gait_time: %f, gait_amp: %f, direction: %f, gait_time_modifier: %f\n", gaitSelected, gait_time, gait_amp, direction, gait_time_modifier);
+  MOTOR_INIT = motor_init;
   GAIT_T = gait_time;
-  MOTOR_MAX_VAL = motor_max_value;
+  GAIT_T_AMP = gait_time_modifier;
+  GAIT_AMP = gait_amp;
+  MODE_DIR = direction;
 
   if (gaitSelected.size() != 0)
   {

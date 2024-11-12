@@ -8,9 +8,24 @@
 
 
 namespace bluetoothHandler{
-  enum direction{None, Forwards, Backwards, Left, Right, RotateLeft, RotateRight};
+  enum class ArrowButtons{None, Forwards, Backwards, Left, Right};
+  enum class TheFourButtonsOnTheFrontOfTheController{None, X, B, Y, A};
   
-  static direction movement;
+  static ArrowButtons arrowButtons;
+  static float leftJoystickUpDown = 0;
+  static float leftJoystickLeftRight = 0;
+  static float rightJoystickUpDown = 0;
+  static float rightJoystickLeftRight = 0;
+  static TheFourButtonsOnTheFrontOfTheController buttons;
+  
+  struct BluetoothOutput{
+    ArrowButtons arrowButtons;
+    float leftJoystickUpDown;
+    float leftJoystickLeftRight;
+    float rightJoystickUpDown;
+    float rightJoystickLeftRight;
+    TheFourButtonsOnTheFrontOfTheController buttons;
+  };
 };
 
 class BluetoothHandler
@@ -20,7 +35,7 @@ class BluetoothHandler
     ~BluetoothHandler();
     static void joy(void *cbdata, int x, int y, int z, int rz, uint8_t hat, uint32_t buttons);
     void setup();
-    bluetoothHandler::direction loop();
+    bluetoothHandler::BluetoothOutput loop();
 
   private:
     BluetoothHIDMaster hid;

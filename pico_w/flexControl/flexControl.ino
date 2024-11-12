@@ -19,7 +19,7 @@ void setup()
 
 void loop() 
 {
-  bluetoothHandler::direction movement = bh.loop();
-  std::array<uint8_t, 3> motorOutput = gm.loop(movement);
+  bluetoothHandler::BluetoothOutput btOut = bh.loop();
+  std::array<uint8_t, 3> motorOutput = gm.loop(btOut);
   mc.loop(motorOutput);
 }

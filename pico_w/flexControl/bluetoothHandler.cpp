@@ -25,34 +25,69 @@ void BluetoothHandler::joy(void *cbdata, int x, int y, int z, int rz, uint8_t ha
   // }
   // Serial.println();
 
-  if (z > 256*0.9) 
+  // Get arrow buttons output
+  auto arrows = hat & 15;
+  if (arrows == 0)
   {
-    movement = RotateRight;
+    arrowButtons = ArrowButtons::Forwards;
   }
-  else if (z < 256*0.1) 
+  else if(arrows == 4)
   {
-    movement = RotateLeft;
+    arrowButtons = ArrowButtons::Backwards;
   }
-  else if (x > 256*0.9) 
+  else if(arrows == 6)
   {
-    movement = Right;
+    arrowButtons = ArrowButtons::Left;
   }
-  else if (x < 256*0.1) 
+  else if(arrows == 2)
   {
-    movement = Left;
-  }
-  else if (y < 256*0.1) 
-  {
-    movement = Forwards;
-  }
-  else if (y > 256*0.9) 
-  {
-    movement = Backwards;
+    arrowButtons = ArrowButtons::Right;
   }
   else
   {
-    movement = None;
+    arrowButtons = ArrowButtons::None;
   }
+
+  if (arrowButtons != ArrowButtons::None)
+  {
+    // Reset buttons
+    bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::None;
+  }
+  else
+  {
+    // Get left joystick up-down output
+    leftJoystickUpDown = 1 - ((float)y / 256);
+
+    
+    // Get right joystick up-down output
+    rightJoystickUpDown = 1 - ((float)rz / 256);
+    
+    
+    // Get right joystick left-right output
+    rightJoystickLeftRight = (float)z / 256;
+    
+    if (buttons & 1 << 12)
+    {
+      bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::None;
+    }
+    else if (buttons & 1 << 3)
+    {
+      bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::X;
+    }
+    else if (buttons & 1 << 1)
+    {
+      bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::B;
+    }
+    else if (buttons & 1 << 4)
+    {
+      bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::Y;
+    }
+    else if (buttons & 1 << 0)
+    {
+      bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::A;
+    }
+  }
+  // Serial.printf("arrowButtons: %i | leftJoystickUpDown: %f | rightJoystickUpDown: %f | rightJoystickLeftRight: %f | bluetoothHandler: %i\n", arrowButtons, leftJoystickUpDown, rightJoystickUpDown, rightJoystickLeftRight, bluetoothHandler::buttons);
 }
 
 void BluetoothHandler::setup()
@@ -66,7 +101,7 @@ void BluetoothHandler::setup()
   hid.connectJoystick();
 }
 
-direction BluetoothHandler::loop()
+BluetoothOutput BluetoothHandler::loop()
 {
   if (BOOTSEL) 
   {
@@ -101,6 +136,12 @@ direction BluetoothHandler::loop()
   }
   // if (movement != None)
   //   Serial.printf("movement:%i\n", movement);
-
-  return movement;
+  // Serial.printf("arrowButtons: %i | leftJoystickUpDown: %f | rightJoystickUpDown: %f | rightJoystickLeftRight: %f | bluetoothHandler: %i\n", arrowButtons, leftJoystickUpDown, rightJoystickUpDown, rightJoystickLeftRight, bluetoothHandler::buttons);
+  // return {arrowButtons, leftJoystickUpDown, rightJoystickUpDown, rightJoystickLeftRight, bluetoothHandler::buttons};
+  return {arrowButtons,
+    leftJoystickUpDown,
+    leftJoystickLeftRight,
+    rightJoystickUpDown,
+    rightJoystickLeftRight,
+    buttons};
 }
