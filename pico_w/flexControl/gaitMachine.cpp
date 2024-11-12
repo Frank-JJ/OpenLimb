@@ -170,13 +170,13 @@ GaitSelectionInfo GaitMachine::selectGait(BluetoothOutput btIn)
     return {selectedGait.gait, selectedGait.gait_time, selectedGait.gait_amp, 0, 1};
   }
 
-  if (btIn.buttons == TheFourButtonsOnTheFrontOfTheController::None)
+  if (btIn.buttons != TheFourButtonsOnTheFrontOfTheController::None)
   {
-    return {};
+    auto selectedGait = movementGaits[static_cast<int>(btIn.buttons)-1];
+    // Serial.printf("btIn.buttons: %i\n", static_cast<int>(btIn.buttons)-1);
+    return {selectedGait.gait, selectedGait.gait_time, btIn.leftJoystickUpDown, btIn.rightJoystickLeftRight, btIn.rightJoystickUpDown};
   }
-  auto selectedGait = movementGaits[static_cast<int>(btIn.buttons)-1];
-  // Serial.printf("btIn.buttons: %i\n", static_cast<int>(btIn.buttons)-1);
-  return {selectedGait.gait, selectedGait.gait_time, btIn.leftJoystickUpDown, btIn.rightJoystickLeftRight, btIn.rightJoystickUpDown};
+  return {};
 }
 
 std::array<uint8_t, 3> GaitMachine::loop(BluetoothOutput btIn){

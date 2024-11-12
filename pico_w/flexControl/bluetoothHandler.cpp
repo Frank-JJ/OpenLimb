@@ -48,37 +48,44 @@ void BluetoothHandler::joy(void *cbdata, int x, int y, int z, int rz, uint8_t ha
     arrowButtons = ArrowButtons::None;
   }
 
-  // Get left joystick up-down output
-  leftJoystickUpDown = 1 - ((float)y / 256);
-
-  
-  // Get right joystick up-down output
-  rightJoystickUpDown = 1 - ((float)rz / 256);
-  
-  
-  // Get right joystick left-right output
-  rightJoystickLeftRight = (float)z / 256;
-  
-
-  if (buttons & 1 << 12)
+  if (arrowButtons != ArrowButtons::None)
   {
+    // Reset buttons
     bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::None;
   }
-  else if (buttons & 1 << 3)
+  else
   {
-    bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::X;
-  }
-  else if (buttons & 1 << 1)
-  {
-    bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::B;
-  }
-  else if (buttons & 1 << 4)
-  {
-    bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::Y;
-  }
-  else if (buttons & 1 << 0)
-  {
-    bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::A;
+    // Get left joystick up-down output
+    leftJoystickUpDown = 1 - ((float)y / 256);
+
+    
+    // Get right joystick up-down output
+    rightJoystickUpDown = 1 - ((float)rz / 256);
+    
+    
+    // Get right joystick left-right output
+    rightJoystickLeftRight = (float)z / 256;
+    
+    if (buttons & 1 << 12)
+    {
+      bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::None;
+    }
+    else if (buttons & 1 << 3)
+    {
+      bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::X;
+    }
+    else if (buttons & 1 << 1)
+    {
+      bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::B;
+    }
+    else if (buttons & 1 << 4)
+    {
+      bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::Y;
+    }
+    else if (buttons & 1 << 0)
+    {
+      bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::A;
+    }
   }
   // Serial.printf("arrowButtons: %i | leftJoystickUpDown: %f | rightJoystickUpDown: %f | rightJoystickLeftRight: %f | bluetoothHandler: %i\n", arrowButtons, leftJoystickUpDown, rightJoystickUpDown, rightJoystickLeftRight, bluetoothHandler::buttons);
 }
