@@ -5,6 +5,7 @@ using namespace gaits;
 using namespace bluetoothHandler;
 
 GaitStruct MAX_MOTOR = {
+  .initialMotorPositions = {1,1,1},
   .gait={
     {Motors::Tail, 1, 0, 1},
     {Motors::Left, 1, 0, 1},
@@ -113,9 +114,12 @@ void GaitMachine::gaitControl(Gait gait, std::chrono::microseconds deltaT){
     T_in_gait -= GAIT_T*GAIT_T_AMP;
   }
 
-  prev_M_pos[0] = 0;
-  prev_M_pos[1] = 0;
-  prev_M_pos[2] = 0;
+  prev_M_pos[0] = MOTOR_INIT[0];
+  prev_M_pos[1] = MOTOR_INIT[1];
+  prev_M_pos[2] = MOTOR_INIT[2];
+  M_pos[0] = MOTOR_INIT[0];
+  M_pos[1] = MOTOR_INIT[1];
+  M_pos[2] = MOTOR_INIT[2];
   for(const auto& cmd : gait){
     float cmd_start_time = cmd.start * GAIT_T*GAIT_T_AMP, cmd_end_time = (cmd.start + cmd.duration) * GAIT_T*GAIT_T_AMP;
     if (T_in_gait < cmd_start_time || T_in_gait >= cmd_end_time){
@@ -133,17 +137,17 @@ void GaitMachine::gaitControl(Gait gait, std::chrono::microseconds deltaT){
     if (motorConfigVector[i].servoSide == ServoSide::Right)
     {
       M_pos[i] = 1 - M_pos[i];
-      Serial.printf("ServoSide::Right");
+      // Serial.printf("ServoSide::Right");
     }
     if (motorConfigVector[i].bodySide == BodySide::Left)
     {
       M_pos[i] = M_pos[i] * min(1, 2 - MODE_DIR*2);
-      Serial.printf(" BodySide::Left");
+      // Serial.printf(" BodySide::Left");
     }
     else if(motorConfigVector[i].bodySide == BodySide::Right)
     {
       M_pos[i] = M_pos[i] * min(1, MODE_DIR*2);
-      Serial.printf(" BodySide::Right");
+      // Serial.printf(" BodySide::Right");
     }
     Serial.printf("\n");
   }
@@ -167,21 +171,22 @@ GaitSelectionInfo GaitMachine::selectGait(BluetoothOutput btIn)
   {
     // Serial.printf("arrowButtons: %i\n", static_cast<int>(btIn.arrowButtons));
     auto selectedGait = movementGaits[static_cast<int>(btIn.arrowButtons)-1];
-    return {selectedGait.gait, selectedGait.gait_time, selectedGait.gait_amp, directionCenter, 1};
+    return {selectedGait.initialMotorPositions, selectedGait.gait, selectedGait.gait_time, selectedGait.gait_amp, directionCenter, 1};
   }
 
   if (btIn.buttons != TheFourButtonsOnTheFrontOfTheController::None)
   {
     auto selectedGait = movementGaits[static_cast<int>(btIn.buttons)-1];
     // Serial.printf("btIn.buttons: %i\n", static_cast<int>(btIn.buttons)-1);
-    return {selectedGait.gait, selectedGait.gait_time, btIn.leftJoystickUpDown*2, btIn.rightJoystickLeftRight, (1-btIn.rightJoystickUpDown)*2};
+    return {selectedGait.initialMotorPositions, selectedGait.gait, selectedGait.gait_time, btIn.leftJoystickUpDown*2, btIn.rightJoystickLeftRight, (1-btIn.rightJoystickUpDown)*2};
   }
   return {};
 }
 
 std::array<uint8_t, 3> GaitMachine::loop(BluetoothOutput btIn){
-  auto [gaitSelected, gait_time, gait_amp, direction, gait_time_modifier] = selectGait(btIn);
+  auto [motor_init, gaitSelected, gait_time, gait_amp, direction, gait_time_modifier] = selectGait(btIn);
   // Serial.printf("gaitSelected: %f, gait_time: %f, gait_amp: %f, direction: %f, gait_time_modifier: %f\n", gaitSelected, gait_time, gait_amp, direction, gait_time_modifier);
+  MOTOR_INIT = motor_init;
   GAIT_T = gait_time;
   GAIT_T_AMP = gait_time_modifier;
   GAIT_AMP = gait_amp;

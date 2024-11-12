@@ -22,7 +22,9 @@ namespace gaits{
 
   typedef std::vector<motorCMD> Gait;
 
+
   struct GaitStruct{
+    std::vector<float> initialMotorPositions = {0,0,0};
     Gait gait;
     float gait_time = 2;   //Duration of the gait's repeating pattern (seconds)
     float gait_amp = 1;
@@ -31,6 +33,7 @@ namespace gaits{
   typedef std::vector<GaitStruct> GaitVector;
 
   struct GaitSelectionInfo{
+    std::vector<float> motor_init = {0,0,0};
     Gait gait;
     float gait_time = 2;
     float gait_amp = 1;
@@ -71,6 +74,7 @@ class GaitMachine
     std::array<float, 3> M_pos = {0,0,0};
     std::array<float, 3> prev_M_pos = {0,0,0};
 
+    std::vector<float> MOTOR_INIT = {0,0,0};
     float GAIT_T = 2;   // Duration of the gait's repeating pattern (seconds).
     float GAIT_AMP = 1;   // Max degree of amplitude.
     float MOTOR_MAX_VAL = 180; // Max degree of servos allowed.
