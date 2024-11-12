@@ -46,7 +46,7 @@ namespace gaits{
     ServoSide servoSide;
   };
 
-  typedef std::vector<MotorConfig> MotorConfigVector;
+  typedef std::vector<MotorConfig> MotorConfigVector;  
 }
 
 using namespace gaits;
@@ -71,13 +71,14 @@ class GaitMachine
     std::array<float, 3> M_pos = {0,0,0};
     std::array<float, 3> prev_M_pos = {0,0,0};
 
-    float GAIT_T = 2;   //Duration of the gait's repeating pattern (seconds)
-    float GAIT_AMP = 1;   //Max degree of amplitude
-    float MOTOR_MAX_VAL = 180; //Max degree of servos allowed
-    float MODE_DIR = 0; //Mode direction of gait - for three legs it is 
-    float GAIT_T_AMP = 1;
+    float GAIT_T = 2;   // Duration of the gait's repeating pattern (seconds).
+    float GAIT_AMP = 1;   // Max degree of amplitude.
+    float MOTOR_MAX_VAL = 180; // Max degree of servos allowed.
+    float MODE_DIR = 0; // Mode direction of gait. Goes from 0 to 1, where 0.5 is the center.
+    float directionCenter = 0.5;
+    float GAIT_T_AMP = 1; // Amplitude of gait duration. As in what to multiply GAIT_T with to get the final gait duration.
     
-    float tick_frq = 200; //Hz
+    float tick_frq = 200; // Hz
     microseconds tick_Time = duration_cast<microseconds>(std::chrono::duration<float>(1/tick_frq));
 
     std::array<uint8_t, 3> motor_pos_array;

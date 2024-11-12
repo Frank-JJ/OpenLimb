@@ -95,7 +95,7 @@ GaitMachine::~GaitMachine()
 }
 
 int GaitMachine::mapToMotorValue(float M_pos){
-  return (int)(M_pos * GAIT_AMP * MOTOR_MAX_VAL);
+  return (int)min(MOTOR_MAX_VAL,(M_pos * GAIT_AMP * MOTOR_MAX_VAL));
 }
 
 void GaitMachine::gaitControl(Gait gait, std::chrono::microseconds deltaT){
@@ -167,14 +167,14 @@ GaitSelectionInfo GaitMachine::selectGait(BluetoothOutput btIn)
   {
     // Serial.printf("arrowButtons: %i\n", static_cast<int>(btIn.arrowButtons));
     auto selectedGait = movementGaits[static_cast<int>(btIn.arrowButtons)-1];
-    return {selectedGait.gait, selectedGait.gait_time, selectedGait.gait_amp, 0, 1};
+    return {selectedGait.gait, selectedGait.gait_time, selectedGait.gait_amp, directionCenter, 1};
   }
 
   if (btIn.buttons != TheFourButtonsOnTheFrontOfTheController::None)
   {
     auto selectedGait = movementGaits[static_cast<int>(btIn.buttons)-1];
     // Serial.printf("btIn.buttons: %i\n", static_cast<int>(btIn.buttons)-1);
-    return {selectedGait.gait, selectedGait.gait_time, btIn.leftJoystickUpDown, btIn.rightJoystickLeftRight, btIn.rightJoystickUpDown};
+    return {selectedGait.gait, selectedGait.gait_time, btIn.leftJoystickUpDown*2, btIn.rightJoystickLeftRight, (1-btIn.rightJoystickUpDown)*2};
   }
   return {};
 }
