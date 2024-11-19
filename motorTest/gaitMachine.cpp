@@ -8,6 +8,7 @@ GaitStruct Test_Gait_tail = {
   .initialMotorPositions = {0,0,0},
   .gait={
     {Motors::Tail, 1, 0, 0.5},
+    {Motors::Tail, 0, 0.5, 1},
   },
   .gait_time=0.5,
   .gait_amp=1
@@ -17,6 +18,7 @@ GaitStruct Test_Gait_left = {
   .initialMotorPositions = {0,0,0},
   .gait={
     {Motors::Left, 1, 0, 0.5},
+    {Motors::Left, 0, 0.5, 1},
   },
   .gait_time=0.5,
   .gait_amp=1
@@ -26,6 +28,7 @@ GaitStruct Test_Gait_right = {
   .initialMotorPositions = {0,0,0},
   .gait={
     {Motors::Right, 1, 0, 0.5},
+    {Motors::Right, 0, 0.5, 1},
   },
   .gait_time=0.5,
   .gait_amp=1
