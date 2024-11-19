@@ -96,17 +96,25 @@ GaitSelectionInfo GaitMachine::selectGait(BluetoothOutput btIn)
   // Serial.printf("arrowButtons: %i\n", static_cast<int>(btIn.arrowButtons));
   auto selectedGait = movementGaits[0];
   float gait_time_modifier = GAIT_T_AMP;
-  if (btIn.arrowButtons == ArrowButtons::Forwards && lastArrowButton == ArrowButtons::None)
+  if (btIn.buttons != TheFourButtonsOnTheFrontOfTheController::None)
   {
-    gait_time_modifier -= gait_t_amp_stepsize;
+    if (btIn.arrowButtons == ArrowButtons::Forwards && lastArrowButton == ArrowButtons::None)
+    {
+      gait_time_modifier -= gait_t_amp_stepsize;
+    }
+    else if (btIn.arrowButtons == ArrowButtons::Backwards && lastArrowButton == ArrowButtons::None)
+    {
+      gait_time_modifier += gait_t_amp_stepsize;
+    }
+    if ((GAIT_T + gait_time_modifier) < 0)
+    {
+      gait_time_modifier = -GAIT_T;
+    }
   }
-  else if (btIn.arrowButtons == ArrowButtons::Backwards && lastArrowButton == ArrowButtons::None)
+  else
   {
-    gait_time_modifier += gait_t_amp_stepsize;
-  }
-  if ((GAIT_T + gait_time_modifier) < 0)
-  {
-    gait_time_modifier = GAIT_T;
+    // Turn off movement 
+    gait_time_modifier = -GAIT_T;
   }
   lastArrowButton = btIn.arrowButtons;
   Serial.printf("gait_time_modifier:%f",gait_time_modifier);
