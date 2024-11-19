@@ -92,6 +92,7 @@ class GaitMachine
 
     bluetoothHandler::ArrowButtons lastArrowButton = bluetoothHandler::ArrowButtons::None;
     float gait_t_amp_stepsize = 0.25;
+    size_t select_gait_id = 0;
 
     
 };

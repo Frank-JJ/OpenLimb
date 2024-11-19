@@ -4,7 +4,7 @@
 using namespace gaits;
 using namespace bluetoothHandler;
 
-GaitStruct Test_Gait = {
+GaitStruct Test_Gait_tail = {
   .initialMotorPositions = {0,0,0},
   .gait={
     {Motors::Tail, 1, 0, 0.5},
@@ -13,7 +13,25 @@ GaitStruct Test_Gait = {
   .gait_amp=1
 };
 
-GaitVector movementGaits = {Test_Gait};
+GaitStruct Test_Gait_left = {
+  .initialMotorPositions = {0,0,0},
+  .gait={
+    {Motors::Left, 1, 0, 0.5},
+  },
+  .gait_time=0.5,
+  .gait_amp=1
+};
+
+GaitStruct Test_Gait_right = {
+  .initialMotorPositions = {0,0,0},
+  .gait={
+    {Motors::Right, 1, 0, 0.5},
+  },
+  .gait_time=0.5,
+  .gait_amp=1
+};
+
+GaitVector movementGaits = {Test_Gait_tail, Test_Gait_left, Test_Gait_right};
 
 MotorConfigVector motorConfigVector = {
   {BodySide::Left, ServoSide::Left},
@@ -94,7 +112,19 @@ GaitSelectionInfo GaitMachine::selectGait(BluetoothOutput btIn)
 {
   // Serial.printf("arrowButtons: %i | leftJoystickUpDown: %f | rightJoystickUpDown: %f | rightJoystickLeftRight: %f | bluetoothHandler: %i\n", btIn.arrowButtons, btIn.leftJoystickUpDown, btIn.rightJoystickUpDown, btIn.rightJoystickLeftRight, btIn.buttons);
   // Serial.printf("arrowButtons: %i\n", static_cast<int>(btIn.arrowButtons));
-  auto selectedGait = movementGaits[0];
+  if (btIn.arrowButtons == ArrowButtons::Left && lastArrowButton == ArrowButtons::None)
+  {
+    select_gait_id -= 1;
+  }
+  else if (btIn.arrowButtons == ArrowButtons::Right && lastArrowButton == ArrowButtons::None)
+  {
+    select_gait_id += 1;
+  }
+  if (select_gait_id < 0 || select_gait_id > movementGaits.size()-1)
+  {
+    select_gait_id = 0;
+  }
+  auto selectedGait = movementGaits[select_gait_id];
   float gait_time_modifier = GAIT_T_AMP;
   if (btIn.buttons != TheFourButtonsOnTheFrontOfTheController::None)
   {
