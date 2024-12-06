@@ -43,8 +43,10 @@ void BluetoothHandler::joy(void *cbdata, int x, int y, int z, int rz, uint8_t ha
   {
     arrowButtons = ArrowButtons::Right;
   }
-  else
+
+  if (buttons & 1 << 12)
   {
+    bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::None;
     arrowButtons = ArrowButtons::None;
   }
 
@@ -66,11 +68,8 @@ void BluetoothHandler::joy(void *cbdata, int x, int y, int z, int rz, uint8_t ha
     // Get right joystick left-right output
     rightJoystickLeftRight = (float)z / 256;
     
-    if (buttons & 1 << 12)
-    {
-      bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::None;
-    }
-    else if (buttons & 1 << 3)
+    
+    if (buttons & 1 << 3)
     {
       bluetoothHandler::buttons = TheFourButtonsOnTheFrontOfTheController::X;
     }

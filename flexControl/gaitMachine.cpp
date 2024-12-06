@@ -15,6 +15,7 @@ GaitStruct MAX_MOTOR = {
   .gait_amp=1
 };
 
+
 GaitStruct MIN_MOTOR = {
   .gait={
     {Motors::Tail, 0, 0, 1},
@@ -27,14 +28,14 @@ GaitStruct MIN_MOTOR = {
 
 GaitStruct Crawler = {
   .gait={
-    {Motors::Tail, 0.7, 0, 0.05},
-    {Motors::Left, 0.9, 0.05, 0.35},
-    {Motors::Tail, 0, 0.1, 0.3},
-    {Motors::Left, 0, 0.45, 0.05},
-    {Motors::Tail, 0.7, 0.5, 0.05},
-    {Motors::Right, 0.9, 0.55, 0.35},
-    {Motors::Tail, 0, 0.6, 0.3},
-    {Motors::Right, 0, 0.95, 0.05}
+      {Motors::Tail, 0.7, 0, 0.05},
+      {Motors::Left, 0.9, 0.05, 0.35},
+      {Motors::Tail, 0, 0.1, 0.3},
+      {Motors::Left, 0, 0.45, 0.05},
+      {Motors::Tail, 0.7, 0.5, 0.05},
+      {Motors::Right, 0.9, 0.55, 0.35},
+      {Motors::Tail, 0, 0.6, 0.3},
+      {Motors::Right, 0, 0.95, 0.05}
   },
   .gait_time=2,
   .gait_amp=0.5
@@ -77,7 +78,66 @@ GaitStruct WormR = {
   .gait_amp=0.5
 };
 
-GaitVector movementGaits = {MAX_MOTOR, MIN_MOTOR, Jump, WormR};
+GaitStruct PushLegs = {
+  .gait={
+    {Motors::Left,  1,  0,    0.5},
+    {Motors::Right, 1,  0,    0.5},
+    {Motors::Left,  0,  0.5,  1},
+    {Motors::Right, 0,  0.5,  1},
+  },
+  .gait_time=5,
+  .gait_amp=1
+};
+
+GaitStruct PushTail = {
+  .gait={
+    {Motors::Tail,  1,  0,    0.5},
+    {Motors::Tail,  0,  0.5,  1},
+  },
+  .gait_time=5,
+  .gait_amp=1
+};
+
+GaitStruct UP_DOWN3 = {
+  .initialMotorPositions = {0,0,0},
+  .gait={
+    {Motors::Tail, 0.8, 0, 0.8},
+    {Motors::Tail, 0, 0.8, 1}
+  },
+  .gait_time=1,
+  .gait_amp=1
+};
+GaitStruct UP_DOWN2 = {
+  .initialMotorPositions = {0,0,0},
+  .gait={
+    {Motors::Right, 0.8, 0, 0.8},
+    {Motors::Right, 0, 0.8, 1}
+  },
+  .gait_time=1,
+  .gait_amp=1
+};
+GaitStruct UP_DOWN1 = {
+  .initialMotorPositions = {0,0,0},
+  .gait={
+    {Motors::Left, 0.8, 0, 0.8},
+    {Motors::Left, 0, 0.8, 1}
+  },
+  .gait_time=1,
+  .gait_amp=1
+};
+GaitStruct UP_DOWN_LR = {
+  .initialMotorPositions = {0,0,0},
+  .gait={
+    {Motors::Left, 0.7, 0, 0.8},
+    {Motors::Right, 0.7, 0, 0.8},
+    {Motors::Left, 0, 0.8, 1},
+    {Motors::Right, 0, 0.8, 1}
+  },
+  .gait_time=1,
+  .gait_amp=1
+};
+
+GaitVector movementGaits = {UP_DOWN_LR, Crawler, MAX_MOTOR, MIN_MOTOR};
 
 MotorConfigVector motorConfigVector = {
   {BodySide::Left, ServoSide::Left},
@@ -180,7 +240,7 @@ GaitSelectionInfo GaitMachine::selectGait(BluetoothOutput btIn)
     // Serial.printf("btIn.buttons: %i\n", static_cast<int>(btIn.buttons)-1);
     return {selectedGait.initialMotorPositions, selectedGait.gait, selectedGait.gait_time, btIn.leftJoystickUpDown*2, btIn.rightJoystickLeftRight, (1-btIn.rightJoystickUpDown)*2};
   }
-  return {};
+  return {{0,0,0}, movementGaits[0].gait, 0, 0, 0.5, 0};
 }
 
 std::array<uint8_t, 3> GaitMachine::loop(BluetoothOutput btIn){
