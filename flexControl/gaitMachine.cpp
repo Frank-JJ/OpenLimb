@@ -41,7 +41,7 @@ GaitStruct Crawler = {
   .gait_amp=0.5
 };
 
-GaitStruct TailPusher = {
+GaitStruct TailPush = {
   .gait={
       {Motors::Tail, 0.8, 0, 0.1},
       {Motors::Tail, 0, 0.1, 0.35},
@@ -136,24 +136,34 @@ GaitStruct UP_DOWN1 = {
   .gait_time=1,
   .gait_amp=1
 };
-GaitStruct UP_DOWN_LR = {
+GaitStruct BackJump = {
   .initialMotorPositions = {0,0,0},
   .gait={
-    {Motors::Left, 0.7, 0, 0.8},
-    {Motors::Right, 0.7, 0, 0.8},
-    {Motors::Left, 0, 0.8, 1},
-    {Motors::Right, 0, 0.8, 1}
+    {Motors::Left, 1, 0, 0.5},
+    {Motors::Right, 1, 0, 0.5},
+    {Motors::Left, 0, 0.5, 0.5},
+    {Motors::Right, 0, 0.5, 0.5}
+  },
+  .gait_time=0.5,
+  .gait_amp=1
+};
+GaitStruct BackCrawl = {
+  .gait={
+      {Motors::Left, 1, 0, 0.25},
+      {Motors::Left, 0, 0.25, 0.25},
+      {Motors::Right, 1, 0.5, 0.25},
+      {Motors::Right, 0, 0.75, 0.25}
   },
   .gait_time=1,
   .gait_amp=1
 };
 
-GaitVector movementGaits = {UP_DOWN_LR, Crawler, TailPusher, MIN_MOTOR};
+GaitVector movementGaits = {Crawler, TailPush, BackJump, BackCrawl};
 
 MotorConfigVector motorConfigVector = {
   {BodySide::Left, ServoSide::Left},
-  {BodySide::Right, ServoSide::Left},
-  {BodySide::Center, ServoSide::Left}
+  {BodySide::Center, ServoSide::Left},
+  {BodySide::Right, ServoSide::Left}
 };
 
 GaitMachine::GaitMachine()
