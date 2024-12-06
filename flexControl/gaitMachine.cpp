@@ -28,14 +28,25 @@ GaitStruct MIN_MOTOR = {
 
 GaitStruct Crawler = {
   .gait={
-      {Motors::Tail, 0.7, 0, 0.05},
-      {Motors::Left, 0.9, 0.05, 0.35},
-      {Motors::Tail, 0, 0.1, 0.3},
+      {Motors::Tail, 0.8, 0, 0.1},
+      {Motors::Left, 0.8, 0.1, 0.35},
+      {Motors::Tail, 0, 0.1, 0.35},
       {Motors::Left, 0, 0.45, 0.05},
-      {Motors::Tail, 0.7, 0.5, 0.05},
-      {Motors::Right, 0.9, 0.55, 0.35},
-      {Motors::Tail, 0, 0.6, 0.3},
+      {Motors::Tail, 0.8, 0.5, 0.1},
+      {Motors::Right, 0.8, 0.6, 0.35},
+      {Motors::Tail, 0, 0.6, 0.35},
       {Motors::Right, 0, 0.95, 0.05}
+  },
+  .gait_time=2,
+  .gait_amp=0.5
+};
+
+GaitStruct TailPusher = {
+  .gait={
+      {Motors::Tail, 0.8, 0, 0.1},
+      {Motors::Tail, 0, 0.1, 0.35},
+      {Motors::Tail, 0.8, 0.5, 0.1},
+      {Motors::Tail, 0, 0.6, 0.35}
   },
   .gait_time=2,
   .gait_amp=0.5
@@ -137,7 +148,7 @@ GaitStruct UP_DOWN_LR = {
   .gait_amp=1
 };
 
-GaitVector movementGaits = {UP_DOWN_LR, Crawler, MAX_MOTOR, MIN_MOTOR};
+GaitVector movementGaits = {UP_DOWN_LR, Crawler, TailPusher, MIN_MOTOR};
 
 MotorConfigVector motorConfigVector = {
   {BodySide::Left, ServoSide::Left},
