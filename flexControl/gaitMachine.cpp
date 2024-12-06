@@ -38,7 +38,7 @@ GaitStruct Crawler = {
       {Motors::Right, 0, 0.95, 0.05}
   },
   .gait_time=2,
-  .gait_amp=0.5
+  .gait_amp=1
 };
 
 GaitStruct TailPush = {
@@ -49,7 +49,7 @@ GaitStruct TailPush = {
       {Motors::Tail, 0, 0.6, 0.35}
   },
   .gait_time=2,
-  .gait_amp=0.5
+  .gait_amp=1
 };
 
 GaitStruct Worm = {
