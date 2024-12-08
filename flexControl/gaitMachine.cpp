@@ -157,11 +157,24 @@ GaitStruct BackCrawl = {
   .gait_time=1,
   .gait_amp=1
 };
+GaitStruct Caterpillar = {
+  .gait={
+      {Tail,  0.68,  0,    0.2},
+      {Left,  0.9,  0,    0.5},
+      {Right, 0.9,  0,    0.5},
+      {Tail,  0.2,  0.5,  0.2},
+      {Left,  0,    0.8,  0.05},
+      {Right, 0,    0.8,  0.05},
+      {Tail,  0,    0.8,  0.2},
+  },
+  .gait_time=0.5,
+  .gait_amp=0.5
+};
 
 // Here we define the list of four gaits the joystick can change between
-// In order they are FORWARDS, BACKWARDS, LEFT, RIGHT on the physical joystick
-// As defined in bluetoothHandler.h: ArrowButtons{None, Forwards, Backwards, Left, Right};
-GaitVector movementGaits = {Crawler, TailPush, BackJump, BackCrawl};
+// We change between them with the arrow buttons, or X, B, Y, A buttons
+// In order they are UP, DOWN, LEFT, RIGHT on the arrow buttons, or X, B, Y, A
+GaitVector movementGaits = {Crawler, Caterpillar, TailPush, BackJump};
 
 // Here we define the motor and limb configurations
 MotorConfigVector motorConfigVector = {
