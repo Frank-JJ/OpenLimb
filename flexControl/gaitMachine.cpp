@@ -26,7 +26,22 @@ GaitStruct MIN_MOTOR = {
   .gait_amp=1
 };
 
-GaitStruct Crawler = {
+GaitStruct Crawler_50 = {
+  .gait={
+      {Motors::Tail, 0.8, 0, 0.1},
+      {Motors::Left, 0.8, 0.1, 0.35},
+      {Motors::Tail, 0, 0.1, 0.35},
+      {Motors::Left, 0, 0.45, 0.05},
+      {Motors::Tail, 0.8, 0.5, 0.1},
+      {Motors::Right, 0.8, 0.6, 0.35},
+      {Motors::Tail, 0, 0.6, 0.35},
+      {Motors::Right, 0, 0.95, 0.05}
+  },
+  .gait_time=4,
+  .gait_amp=1
+};
+
+GaitStruct Crawler_100 = {
   .gait={
       {Motors::Tail, 0.8, 0, 0.1},
       {Motors::Left, 0.8, 0.1, 0.35},
@@ -38,6 +53,21 @@ GaitStruct Crawler = {
       {Motors::Right, 0, 0.95, 0.05}
   },
   .gait_time=2,
+  .gait_amp=1
+};
+
+GaitStruct Crawler_200 = {
+  .gait={
+      {Motors::Tail, 0.8, 0, 0.1},
+      {Motors::Left, 0.8, 0.1, 0.35},
+      {Motors::Tail, 0, 0.1, 0.35},
+      {Motors::Left, 0, 0.45, 0.05},
+      {Motors::Tail, 0.8, 0.5, 0.1},
+      {Motors::Right, 0.8, 0.6, 0.35},
+      {Motors::Tail, 0, 0.6, 0.35},
+      {Motors::Right, 0, 0.95, 0.05}
+  },
+  .gait_time=1,
   .gait_amp=1
 };
 
@@ -157,7 +187,20 @@ GaitStruct BackCrawl = {
   .gait_time=1,
   .gait_amp=1
 };
-GaitStruct Caterpillar = {
+GaitStruct Caterpillar_50 = {
+  .gait={
+      {Tail,  0.68,  0,    0.2},
+      {Left,  0.9,  0,    0.5},
+      {Right, 0.9,  0,    0.5},
+      {Tail,  0.2,  0.5,  0.2},
+      {Left,  0,    0.8,  0.05},
+      {Right, 0,    0.8,  0.05},
+      {Tail,  0,    0.8,  0.2},
+  },
+  .gait_time=2,
+  .gait_amp=0.5
+};
+GaitStruct Caterpillar_100 = {
   .gait={
       {Tail,  0.68,  0,    0.2},
       {Left,  0.9,  0,    0.5},
@@ -170,11 +213,63 @@ GaitStruct Caterpillar = {
   .gait_time=1,
   .gait_amp=0.5
 };
+GaitStruct Caterpillar_200 = {
+  .gait={
+      {Tail,  0.68,  0,    0.2},
+      {Left,  0.9,  0,    0.5},
+      {Right, 0.9,  0,    0.5},
+      {Tail,  0.2,  0.5,  0.2},
+      {Left,  0,    0.8,  0.2},
+      {Right, 0,    0.8,  0.2},
+      {Tail,  0,    0.8,  0.2},
+  },
+  .gait_time=0.5,
+  .gait_amp=0.5
+};
+
+GaitStruct Caterpillar_test_1 = {
+  .gait={
+      {Tail,  0.8,  0,    0.1},
+      //{Left,  0.8,    0.1,   0.5},
+      //{Right, 0.8,    0.1,   0.5},
+      //{Tail,  0,    0.6,  0.4},
+      //{Left,  0,    0.8,  0.2},
+      //{Right, 0,    0.8,  0.2},
+  },
+  .gait_time=2,
+  .gait_amp=1
+};
+
+GaitStruct Caterpillar_test_2 = {
+  .gait={
+      {Tail,  0.8,  0,    0.1},
+      {Left,  0.8,    0.1,   0.5},
+      {Right, 0.8,    0.1,   0.5},
+      //{Tail,  0,    0.6,  0.4},
+      //{Left,  0,    0.8,  0.2},
+      //{Right, 0,    0.8,  0.2},
+  },
+  .gait_time=2,
+  .gait_amp=1
+};
+
+GaitStruct Caterpillar_test_3 = {
+  .gait={
+      {Tail,  0.8,  0,    0.1},
+      //{Left,  0.8,    0.1,   0.5},
+      //{Right, 0.8,    0.1,   0.5},
+      {Tail,  0,    0.6,  0.4},
+      //{Left,  0,    0.8,  0.2},
+      //{Right, 0,    0.8,  0.2},
+  },
+  .gait_time=2,
+  .gait_amp=1
+};
 
 // Here we define the list of four gaits the joystick can change between
 // We change between them with the arrow buttons, or X, B, Y, A buttons
 // In order they are UP, DOWN, LEFT, RIGHT on the arrow buttons, or X, B, Y, A
-GaitVector movementGaits = {Crawler, Caterpillar, TailPush, BackJump};
+GaitVector movementGaits = {Caterpillar_50, Caterpillar_100, Caterpillar_200, MIN_MOTOR};
 
 // Here we define the motor and limb configurations
 MotorConfigVector motorConfigVector = {
@@ -228,8 +323,9 @@ void GaitMachine::gaitControl(Gait gait, std::chrono::microseconds deltaT){
     float cmd_start_time = cmd.start * GAIT_T*GAIT_T_AMP, cmd_end_time = (cmd.start + cmd.duration) * GAIT_T*GAIT_T_AMP;
     // Check if we are currently outside these timepoints, and if so, save the motor command amount as the previous motor command
     // Since a gait is defined from start to end, this successfully saves the value of the previous motor command
-    if (T_in_gait < cmd_start_time || T_in_gait >= cmd_end_time){
+    if (T_in_gait >= cmd_end_time){
       prev_M_pos[cmd.motorID] = cmd.amount;
+      M_pos[cmd.motorID] = prev_M_pos[cmd.motorID];
     }
     // If we are instead inside the motor command start and end times we should interpolate between the previous motor command and the current commands end value
     if(T_in_gait >= cmd_start_time && T_in_gait < cmd_end_time){
