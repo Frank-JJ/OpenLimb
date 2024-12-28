@@ -167,7 +167,7 @@ GaitStruct Caterpillar = {
       {Right, 0,    0.8,  0.05},
       {Tail,  0,    0.8,  0.2},
   },
-  .gait_time=0.5,
+  .gait_time=1,
   .gait_amp=0.5
 };
 
