@@ -6,6 +6,84 @@ This project consists of the design and construction of a bio-inspired robot, wi
 
 The code in this repository enables the functionality of the robot, when it is assembled correctly.
 
+## Building the robot
+
+### Components List
+
+- **1 pcs.**   Raspberry Pi Pico W
+- **1 pcs.** Android-compatible Bluetooth gamepad, e.g. 8BitDo Pro 2 Bluetooth Gamepad
+- **4 pcs.**   MG90S Micro Servo Motor
+- **1 pcs.**   Li-ion-PO 7.4V 1000mAh battery
+- **1 m.**      Fishing line
+- **4 pcs.**   5V Linear Voltage Regulator (L7805ACV)
+- **10 pcs.**  Female-Female Jumper Cables
+- **1 pcs.**   USB to Micro-USB cable
+- **12 pcs.** M2×7mm bolts
+- **4 pcs.**  M2×16mm bolts
+- **16 pcs.** M2 nuts
+- **16 pcs.** M2 washers
+
+In addition to the components listed, it is highly recommended to acquire a fireproof battery bag, a balanced cell charger, and a over-, under-charge alarm for the battery. Handle the Li-ion battery with care!
+The electrical circuit may require more or less jumper cables, and with different connectors.
+
+### Manufacturing and 3D printing
+
+Any modern 3D printer should be able to print the parts required for this project. You will need either PLA or PETG for:
+
+- Base
+- Battery Mount
+- End link
+- Mounting clip
+- Pulley
+- Servo mount
+
+Besides that, the legs need to be printed in PETG to be flexible and the fins need to be printed in TPU for bendability and grippyness.
+
+### Assembly of Robot
+
+Now that all the parts has been manufactured, it is time to assemble the robot. The robot can be assembled in different configurations to meet a specific task at hand. This configuration can be changed later if necessary.
+
+#### Assembly of Limbs
+
+One limb is constructed using the following parts:
+
+- **1 pcs.**   Flexible 3D-printed or laser cut sheet
+- **1 pcs.**   3D-printed magnet/motor mount
+- **1 pcs.**   MG90S Micro Servo motor
+- **1 pcs.**   An-isotropic friction pad
+- **2 pcs.**   Neodymium Magnets
+- **1 pcs.**   3D-printed foot
+- **$\approx 30cm$**   Fishing line
+- **1 pcs.**   Pulley
+
+Assemble the limb by following these steps:
+
+- STEPS
+
+#### Connecting Limbs to the Body
+
+The limbs can be attached in many configurations around the robot's body. Determine a suitable position for the limb, and then dis-attach the ring cover from the underside of the robot's body with a twisting motion counter-clockwise. Carefully place two Neodymium Magnets in the indents at the chosen position in the robot body. Secure the ring cover over the magnets, by twisting it clockwise until it's locked in place.
+
+Turn the robot around, and place the 3D-printed magnet/motor mount at the end of the limb above the magnets in the body. When the limb has snapped in place, insert a pin into the hole in the magnet/motor mount to lock it in place.
+
+Repeat for the amount of limbs in the desired configuration.
+
+#### Electrical Assembly
+
+- **1 pcs.**   Raspberry Pi Pico W
+- **1 pcs.**   Li-ion-PO 7.4V 1000mAh battery
+- **4 pcs.**   5V Linear Voltage Regulator (L7805ACV)
+- **10 pcs.**  M Jumper Cables
+- **4 pcs.**   M3x15 Machine Screws
+
+Secure the Raspberry Pi Pico W with four M3x15 machine screws in the middle of the robot body. Solder or use quick connect screw terminal blocks to replicate the schematic in fig \ref{apx:fig:schematic}:
+
+#### Electrical Diagram
+
+![Schematic showing the different components and their connections](images/electrical_circuit_schematic.png)
+
+Use electrical tape to fasten components to the body if necessary, but keep in mind to keep weight as low as possible.
+
 ## Using the code
 
 The "flexControl" arduino project contains code that should be run on the Raspberry Pi Pico W to control the servos, according to user defined gaits.
