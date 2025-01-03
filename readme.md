@@ -50,7 +50,7 @@ One limb is constructed using the following parts:
 - **1 pcs.**   Flexible 3D-printed or laser cut sheet
 - **1 pcs.**   3D-printed magnet/motor mount
 - **1 pcs.**   MG90S Micro Servo motor
-- **1 pcs.**   An-isotropic friction pad
+- **1 pcs.**   Friction pad
 - **2 pcs.**   Neodymium Magnets
 - **1 pcs.**   3D-printed foot
 - **$\approx 30cm$**   Fishing line
@@ -76,7 +76,7 @@ Repeat for the amount of limbs in the desired configuration.
 - **10 pcs.**  M Jumper Cables
 - **4 pcs.**   M3x15 Machine Screws
 
-Secure the Raspberry Pi Pico W with four M3x15 machine screws in the middle of the robot body. Solder or use quick connect screw terminal blocks to replicate the schematic in fig \ref{apx:fig:schematic}:
+Secure the Raspberry Pi Pico W with four M3x15 machine screws in the middle of the robot body. Solder or use quick connect screw terminal blocks to replicate the schematic in [Electrical Schematic](#electrical-diagram):
 
 #### Electrical Diagram
 
