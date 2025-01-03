@@ -171,7 +171,7 @@ line 98:    std::array<uint8_t, 3> motor_pos_array;
 Go into: [flexControl/gaitMachine.cpp](flexControl/gaitMachine.cpp)
 
 Set the motor configurations in the MotorConfigVector variable. A limb can be placed on either the left, center, or right side of the body.
-A servo can be placed on either the left or right side of the servo mount as seen when the foot of the limb is held away from the viewer.
+A servo can be placed on either the left or right side of the servo mount as seen from the body out along the length of the limb.
 
 ```cpp
 line 180:   MotorConfigVector motorConfigVector = {
