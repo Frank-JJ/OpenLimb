@@ -32,7 +32,7 @@ Any modern 3D printer should be able to print the parts required for this projec
 
 - Base
 - Battery Mount
-- End link
+- Feet
 - Mounting clip
 - Pulley
 - Servo mount
