@@ -1,4 +1,4 @@
-# Flexicrawl
+# OpenLimb
 
 This project contains code for the Flexicrawl project running University of Southern Denmark, SDU, for the Fall 2024 semester.
 
