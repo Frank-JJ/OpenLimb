@@ -1,6 +1,6 @@
 # OpenLimb
 
-This project contains code for the Flexicrawl project running University of Southern Denmark, SDU, for the Fall 2024 semester.
+This project contains code for the OpenLimb project at University of Southern Denmark, SDU, for the Fall 2024 semester.
 
 This project consists of the design and construction of a bio-inspired robot, with limbs made of soft material, allowing for locomotion.
 
